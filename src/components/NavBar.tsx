@@ -1,0 +1,59 @@
+"use client";
+import Link from "next/link";
+import React, { useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
+import SearchBox from "./SearchBox";
+import Image from "next/image";
+import { useTheme } from "@/context/ThemeContext";
+
+export default function NavBar() {
+  const { theme, toggleTheme } = useTheme(); // Use the context
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  return (
+    <nav className="bg-white dark:bg-gray-900 py-4 px-6 md:px-12">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <Image
+            src={"/assets/logo.svg"}
+            width={30}
+            height={20}
+            alt="logo image"
+          />
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            Blog App
+          </h1>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <button
+            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+            onClick={() => setIsSearchOpen(true)}
+          >
+            <FaSearch size={20} />
+          </button>
+
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          >
+            {theme === "dark" ? (
+              <MdLightMode size={24} />
+            ) : (
+              <MdDarkMode size={24} />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {isSearchOpen && (
+        <SearchBox
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+        />
+      )}
+    </nav>
+  );
+}

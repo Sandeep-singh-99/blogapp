@@ -1,14 +1,15 @@
-import { model, models, Schema, Document, Types } from "mongoose";
+import { model, models, Schema,  Types } from "mongoose";
 
-interface IBlog extends Document {
+interface IBlog  {
   title: string;
-  content: string;
+  category: string;
   slug: string;
   author: Types.ObjectId; 
   tags?: string[];
-  profileImage: string;
+  contentImage: string;
   cloudinaryId?: string; 
-  featuredImage: string;
+  thumbnailImage: string;
+  content: string,
   markdown: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -21,7 +22,7 @@ const blogSchema = new Schema<IBlog>(
       required: true,
       trim: true,
     },
-    content: {
+    category: {
       type: String,
       required: true,
     },
@@ -36,14 +37,18 @@ const blogSchema = new Schema<IBlog>(
       required: true,
     },
     tags: [{ type: String }],
-    profileImage: {
+    contentImage: {
       type: String,
       required: true,
     },
     cloudinaryId: {
       type: String,
     },
-    featuredImage: {
+    thumbnailImage: {
+      type: String,
+      required: true,
+    },
+    content: {
       type: String,
       required: true,
     },

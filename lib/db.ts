@@ -1,74 +1,66 @@
-// import mongoose from 'mongoose'
-// import { MongoClient } from 'mongodb'
-
-
-// const MONGODB_URI = process.env.MONGODB_URI
-
-// if (!MONGODB_URI) {
-//     throw new Error('Please define the MONGODB_URI environment variable inside .env.local')
-// }
-
-// let cached = global.mongoose
-
-// if (!cached) {
-//     cached = global.mongoose = { conn: null, promise: null }
-// }
-
-// const uri:string = process.env.MONGODB_URI!
-
-// if (!uri) {
-//     throw new Error(
-//         'Please define the MONGODB_URI environment variable inside .env.local'
-//     )
-// }
-
-// export async function ConnectDB()  {
-//     if (cached.conn) {
-//         return cached.conn
-//     }
-
-//     if (!cached.promise) {
-//         const opts = {
-//             bufferCommands: false,
-//             maxPollSize: 10,
-//         };
-//         cached.promise = mongoose.connect(uri, opts).then((mongoose) => mongoose.connection)
-//     }
-
-//     try {
-//         cached.conn = await cached.promise
-//     } catch (error) {
-//         cached.promise = null;
-//         throw error;
-//     }
-
-//     return cached.conn
-// }
-
-
-
+import mongoose from "mongoose";
 import { MongoClient } from "mongodb";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
 }
 
-let cachedClient: MongoClient | null = null;
+let cachedMongoose = global.mongoose;
+let cachedMongoClient = global.mongoClient;
 
-export async function ConnectDB(): Promise<MongoClient> {
-    if (cachedClient) {
-        return cachedClient;
-    }
+if (!cachedMongoose) {
+  cachedMongoose = global.mongoose = { conn: null, promise: null };
+}
 
-    try {
-        cachedClient = new MongoClient(MONGODB_URI);
-        await cachedClient.connect();
-        console.log("MongoDB Connected");
-        return cachedClient;
-    } catch (error) {
-        console.error("MongoDB Connection Failed", error);
-        throw error;
-    }
+if (!cachedMongoClient) {
+  cachedMongoClient = global.mongoClient = { conn: null, promise: null };
+}
+
+const uri: string = process.env.MONGODB_URI!;
+if (!uri) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+}
+
+// ✅ Function to connect Mongoose
+export async function ConnectDB() {
+  if (cachedMongoose.conn) {
+    return cachedMongoose.conn;
+  }
+
+  if (!cachedMongoose.promise) {
+    cachedMongoose.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+    }).then(mongoose => mongoose.connection);
+  }
+
+  try {
+    cachedMongoose.conn = await cachedMongoose.promise;
+  } catch (error) {
+    cachedMongoose.promise = null;
+    throw error;
+  }
+
+  return cachedMongoose.conn;
+}
+
+// ✅ Function to connect MongoClient (For NextAuth)
+export async function getMongoClient() {
+  if (cachedMongoClient.conn) {
+    return cachedMongoClient.conn;
+  }
+
+  if (!cachedMongoClient.promise) {
+    cachedMongoClient.promise = new MongoClient(uri, {}).connect();
+  }
+
+  try {
+    cachedMongoClient.conn = await cachedMongoClient.promise;
+  } catch (error) {
+    cachedMongoClient.promise = null;
+    throw error;
+  }
+
+  return cachedMongoClient.conn;
 }

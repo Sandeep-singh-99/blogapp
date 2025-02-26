@@ -5,10 +5,7 @@ interface UploadResponse {
   public_id: string;
 }
 
-export const UploadImage = async (
-  file: File,
-  folder: string
-): Promise<UploadResponse> => {
+export const UploadImage = async (file: File, folder: string): Promise<UploadResponse> => {
   const buffer = await file.arrayBuffer();
   const bytes = Buffer.from(buffer);
 
@@ -23,7 +20,7 @@ export const UploadImage = async (
           if (error) {
             reject(error);
           } else {
-            resolve(result as UploadResponse);
+            resolve(result as UploadResponse); 
           }
         }
       )

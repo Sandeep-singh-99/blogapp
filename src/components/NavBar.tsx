@@ -36,7 +36,7 @@ export default function NavBar() {
           {
             session ? (
               <div>
-                <Link href="/admin-dashboard">
+                <Link href="/write">
                   <p className="text-black dark:text-gray-300 dark:bg-blue-500 p-2 rounded-lg hover:text-white hover:bg-blue-700 transition">
                     Write Own Blog
                   </p>

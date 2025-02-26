@@ -2,7 +2,7 @@ import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import { ConnectDB } from '../../../../../lib/db';
+import { ConnectDB, getMongoClient } from '../../../../../lib/db';
 import { NextRequest } from 'next/server';
 
 
@@ -19,7 +19,7 @@ export const authOptions: AuthOptions = {
             clientSecret: process.env.GITHUB_CLIENT_SECRET!
         }),
     ],
-    adapter: MongoDBAdapter(ConnectDB()), 
+    adapter: MongoDBAdapter(await getMongoClient()), 
     secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt" as const, 
@@ -31,7 +31,7 @@ export const authOptions: AuthOptions = {
                 token.provider = account.provider;
             }
             if (user) {
-                token.id = user.id;
+                token.id = user.id || user._id?.toString();
                 token.name = user.name;
                 token.email = user.email;
                 token.image = user.image;

@@ -30,13 +30,14 @@ export default function AdminPortal() {
   }, []);
 
   return (
-    <Tabs defaultValue="account" className="w-[400px]">
-    <TabsList className="grid w-full grid-cols-3">
-      <TabsTrigger value="account">Account</TabsTrigger>
-      <TabsTrigger value="password">Password</TabsTrigger>
-      <TabsTrigger value="blog">Blog</TabsTrigger>
+    <Tabs defaultValue="add-blog" className="w-full h-full">
+    <TabsList className="grid w-full grid-cols-4">
+      <TabsTrigger value="add-blog">Add Blog</TabsTrigger>
+      <TabsTrigger value="all-blog">All Blog</TabsTrigger>
+      <TabsTrigger value="users">Users</TabsTrigger>
+      <TabsTrigger value="analytics">Analytics</TabsTrigger>
     </TabsList>
-    <TabsContent value="account">
+    <TabsContent value="add-blog">
       <Card>
         <CardHeader>
           <CardTitle>Account</CardTitle>
@@ -59,7 +60,7 @@ export default function AdminPortal() {
         </CardFooter>
       </Card>
     </TabsContent>
-    <TabsContent value="password">
+    <TabsContent value="all-blog">
       <Card>
         <CardHeader>
           <CardTitle>Password</CardTitle>
@@ -82,29 +83,31 @@ export default function AdminPortal() {
         </CardFooter>
       </Card>
     </TabsContent>
-    <TabsContent value="blog">
+
+    <TabsContent value="users">
       <Card>
         <CardHeader>
-          <CardTitle>Account</CardTitle>
+          <CardTitle>Password</CardTitle>
           <CardDescription>
-            Make changes to your account here. Click save when you're done.
+            Change your password here. After saving, you'll be logged out.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="space-y-1">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue="Pedro Duarte" />
+            <Label htmlFor="current">Current password</Label>
+            <Input id="current" type="password" />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="username">Username</Label>
-            <Input id="username" defaultValue="@peduarte" />
+            <Label htmlFor="new">New password</Label>
+            <Input id="new" type="password" />
           </div>
         </CardContent>
         <CardFooter>
-          <Button>Save changes</Button>
+          <Button>Save password</Button>
         </CardFooter>
       </Card>
     </TabsContent>
+    
   </Tabs>
   );
 }

@@ -63,7 +63,7 @@ export default function ProfileAllBlog() {
     } catch (error) {
       console.error("Error fetching data:", error);
       showError({ message: "Failed to fetch data" });
-      setBlogData([]); // Prevents errors by ensuring it's always an array
+      setBlogData([]); 
     }
   };
 

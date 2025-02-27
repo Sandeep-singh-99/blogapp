@@ -16,6 +16,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 // Import shadcn/ui Card components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSession } from "next-auth/react";
 
 type StatsData = {
   labels: string[];
@@ -24,6 +25,7 @@ type StatsData = {
 
 export default function BlogGraph() {
   const [chartData, setChartData] = useState<any>(null);
+  const {data: session } = useSession();
 
   useEffect(() => {
     async function fetchStats() {
@@ -31,6 +33,7 @@ export default function BlogGraph() {
         const res = await fetch("/api/blogs/stats");
         const stats: StatsData = await res.json();
 
+        console.log("Stats:", stats);
         
         setChartData({
           labels: stats.labels, 
@@ -46,8 +49,10 @@ export default function BlogGraph() {
         console.error("Failed to fetch blog stats:", error);
       }
     }
-    fetchStats();
-  }, []);
+    if (session?.user.id) {
+      fetchStats();
+    }
+  }, [session]);
 
   if (!chartData) {
     return <p>Loading graph...</p>;
@@ -79,3 +84,6 @@ export default function BlogGraph() {
     </Card>
   );
 }
+
+
+

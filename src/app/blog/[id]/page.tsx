@@ -21,7 +21,12 @@ interface BlogViewProps {
 }
 
 export default async function BlogView({ params }: BlogViewProps) {
-  const blogData = await getBlogData(params.id);
+  const { id } = await params
+
+  if (!id) {
+    return notFound();
+  }
+  const blogData = await getBlogData(id);
 
   if (!blogData) return notFound();
 

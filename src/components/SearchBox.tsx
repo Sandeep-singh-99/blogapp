@@ -90,7 +90,10 @@ export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
                 {defaultSlugs.map((blog) => (
                   <CommandItem
                     key={blog.slug}
-                    onSelect={() => router.push(`/blog/${blog.slug}`)}
+                    onSelect={() => {
+                      router.push(`/blog/${blog.slug}`)
+                      onClose()
+                    }}
                   >
                     {blog.slug}
                   </CommandItem>

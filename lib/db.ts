@@ -37,6 +37,9 @@ export async function ConnectDB() {
 
   try {
     cachedMongoose.conn = await cachedMongoose.promise;
+    if (cachedMongoose.conn.readyState === 1) {
+      return Promise.resolve(cachedMongoose.conn);
+    }
   } catch (error) {
     cachedMongoose.promise = null;
     throw error;

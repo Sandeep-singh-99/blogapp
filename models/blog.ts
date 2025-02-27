@@ -1,4 +1,5 @@
-import { model, models, Schema,  Types } from "mongoose";
+import { model, models, Schema, Types } from "mongoose";
+import mongoose from "mongoose";
 
 interface IBlog  {
   title: string;
@@ -32,7 +33,7 @@ const blogSchema = new Schema<IBlog>(
       unique: true,
     },
     author: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User", 
       required: true,
     },
@@ -70,6 +71,8 @@ blogSchema.pre("save", function (next) {
   }
   next();
 });
+
+
 
 const BlogModel = models.Blog || model<IBlog>("Blog", blogSchema);
 

@@ -8,13 +8,19 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 
-  webpack: (config) => {
-    config.resolve.fallback = { fs: false };
-    return config;
-  },
+  
+
+  // webpack: (config) => {
+  //   config.resolve.fallback = { fs: false };
+  //   return config;
+  // },
 };
 
 export default nextConfig;

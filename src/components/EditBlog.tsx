@@ -7,16 +7,17 @@ import { showError, showSuccess } from "@/utils/toast";
 
 const mdParser = new MarkdownIt();
 
-export default function Write() {
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState("");
+
+export default function EditBlog({ initialData = null }) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [category, setCategory] = useState(initialData?.category || "");
+  const [tags, setTags] = useState(initialData?.tags || "");
+ 
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
-  const [contentMarkdown, setContentMarkdown] = useState<string>("");
-  
+  const [contentMarkdown, setContentMarkdown] = useState(initialData?.markdown || "");
   const [contentImages, setContentImages] = useState<File[]>([]);
 
- 
+  
   async function onImageUpload(file: File, folder: string): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
@@ -31,10 +32,8 @@ export default function Write() {
           body: formData,
         }
       );
-
       const data = await response.json();
       if (data.secure_url) return data.secure_url;
-
       console.error("Cloudinary Error:", data);
       return "";
     } catch (error) {
@@ -43,7 +42,7 @@ export default function Write() {
     }
   }
 
- 
+  // Handle Markdown Image Upload
   async function handleMarkdownImageUpload(file: File) {
     const url = await onImageUpload(file, "blogs");
     if (url) setContentImages((prev) => [...prev, file]); 
@@ -63,15 +62,13 @@ export default function Write() {
       return alert("Please fill in all fields!");
     }
 
-    let thumbnailUrl = "";
+    
+    let thumbnailUrl = initialData?.thumbnailImage || "";
     let contentImageUrl = "";
 
-    // Upload thumbnail image
     if (thumbnailImage) {
       thumbnailUrl = await onImageUpload(thumbnailImage, "thumbnails");
     }
-
-    // Upload content image (take the first image if multiple are uploaded)
     if (contentImages.length > 0) {
       contentImageUrl = await onImageUpload(contentImages[0], "blogs");
     }
@@ -86,33 +83,49 @@ export default function Write() {
     formData.append("contentImage", contentImageUrl);
 
     try {
-      const response = await fetch("/api/blogs", {
-        method: "POST",
-        body: formData,
-      });
+      let response;
+      if (initialData) {
+       
+        response = await fetch(`/api/blogs/${initialData._id}`, {
+          method: "PUT",
+          body: formData,
+        });
+      } else {
+        // Create new blog
+        response = await fetch("/api/blogs", {
+          method: "POST",
+          body: formData,
+        });
+      }
 
       const responseData = await response.json();
-
       if (response.ok) {
-        setTitle("");
-        setCategory("");
-        setTags("");
-        setThumbnailImage(null);
-        setContentMarkdown("");
-        setContentImages([]);
-        showSuccess({ message: "Blog published successfully!" });
+        showSuccess({
+          message: initialData ? "Blog updated successfully!" : "Blog published successfully!",
+        });
+     
+        if (!initialData) {
+          setTitle("");
+          setCategory("");
+          setTags("");
+          setThumbnailImage(null);
+          setContentMarkdown("");
+          setContentImages([]);
+        }
       } else {
-        alert("Error: " + responseData.error);
         showError({ message: "Error: " + responseData.error });
       }
     } catch (error) {
       console.error("Error:", error);
+      showError({ message: "Error: " + error });
     }
   };
 
   return (
     <div className="flex flex-col gap-6 p-6 max-w-5xl mx-auto shadow-2xl rounded-lg border-2 my-10">
-      <h1 className="text-3xl font-bold">📝 Create a New Blog</h1>
+      <h1 className="text-3xl font-bold">
+        {initialData ? "✏️ Update Blog" : "📝 Create a New Blog"}
+      </h1>
 
       {/* Blog Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,10 +182,8 @@ export default function Write() {
         onClick={handleSubmit}
         className="bg-blue-500 text-white px-6 py-3 rounded-lg"
       >
-        🚀 Publish Blog
+        {initialData ? "Update Blog" : "Publish Blog"}
       </button>
     </div>
   );
 }
-
-

@@ -70,7 +70,7 @@ export default function NavBar() {
                 <Image src={session.user?.image || '/assets/picture-profile.png'} alt="User Avater" width={32} height={32} className="rounded-full"/>
               </Link>
             ) : (
-              <Link href={"/auth/login"} className=" text-black dark:text-white font-[600] px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 hover:text-white transition">
+              <Link href={"/auth/login"} className=" text-white font-[600] px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 hover:text-white transition">
               Login
             </Link>
             )

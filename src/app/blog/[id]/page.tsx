@@ -1,61 +1,73 @@
 import Image from "next/image";
 import React from "react";
+import ReactMarkdown from "react-markdown";
 
-export default function Page() {
-  return (
-    <div className="py-10">
-      <div className="flex justify-center items-center">
-        <div className="max-w-[750px] mx-5 space-y-2 md:space-y-6">
-          <h1 className="md:text-[40px] text-[24px] font-[600] line-clamp-4">
-            Digital Declutter : Cutting the Noise in a Hyperconnected World
-          </h1>
-          <p className="text-[#757575] font-[400]">4 Mins Read</p>
+const baseUrl = "http://localhost:3000";
 
-          <div className="flex flex-col md:flex-row gap-3 md:justify-between md:items-center pt-5 md:pt-10">
-            <div className="flex items-center gap-5">
-              <Image
-                src={"/assets/picture-profile.png"}
-                alt=""
-                width={42}
-                height={42}
-                quality={100}
-              />
-              <div>
-                <h1>Sadneep Singh</h1>
-                <p className="text-[#757575]">Author</p>
-              </div>
-            </div>
-            <p className="text-[#757575]">Nov 29, 2024</p>
-          </div>
+async function getBlogData(id) {
+  const response = await fetch(`${baseUrl}/api/blogs/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  return data;
+}
 
-          <Image
-            src={"/assets/back.png"}
-            alt="nac"
-            width={350}
-            height={100}
-            layout="responsive"
-          />
+export default async function BlogView({ params }) {
+  const { id } = params;
+  const blogData = await getBlogData(id);
 
-          <p>
-            In today’s hyperconnected world, the lines between work, leisure,
-            and rest have blurred significantly. Notifications, endless streams
-            of content, and the need to always stay connected often create a
-            digital noise that impacts mental well-being, focus, and
-            productivity. This is where the concept of digital declutter comes
-            into play.
-          </p>
-
-          <h1>What is Digital Declutter?</h1>
-
-            <p>
-                Digital declutter is the practice of minimizing digital distractions
-                and interruptions to improve focus, productivity, and overall
-                well-being. It involves reducing the time spent on digital devices,
-                decluttering digital spaces, and creating intentional digital
-                habits.
-            </p>
-        </div>
+  if (!blogData || blogData.error) {
+    return (
+      <div className="container mx-auto p-4">
+        <h1>Blog not found</h1>
       </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1> Sandeep Singh</h1>
+      <article key={blogData._id} className="mb-8 p-4 border-b">
+        <h1 className="text-3xl font-bold mb-2">Title: {blogData.title}</h1>
+        <p className="text-gray-600">Category: {blogData.category}</p>
+        <Image src={blogData.thumbnailImage} alt={blogData.title} width={300} height={300}/>
+        <div className="my-4">
+        <ReactMarkdown
+            components={{
+              
+              h1: ({ node, ...props }) => (
+                <h1 className="text-4xl font-bold my-4" {...props} />
+              ),
+              h2: ({ node, ...props }) => (
+                <h2 className="text-3xl font-bold my-4" {...props} />
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 className="text-2xl font-bold my-4" {...props} />
+              ),
+            
+              p: ({ node, ...props }) => (
+                <p className="text-base my-2" {...props} />
+              ),
+              
+              img: ({ node, ...props }) => (
+                <img className="rounded-md" {...props} />
+              ),
+             
+              a: ({ node, ...props }) => (
+                <a className="text-blue-500 underline" {...props} />
+              ),
+            }}
+          >
+            {blogData.markdown}
+          </ReactMarkdown>
+        </div>
+        <p className="text-xs text-gray-400">
+          Created on: {new Date(blogData.createdAt).toLocaleDateString()}
+        </p>
+      </article>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
+import mongoose from "mongoose";
 
 export async function GET(
   req: NextRequest,
@@ -9,10 +10,19 @@ export async function GET(
   try {
     await ConnectDB();
     const { id } = params;
-    const blog = await BlogModel.findById(id);
+
+    let blog = null;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      blog = await BlogModel.findById(id);
+    }
 
     if (!blog) {
-      return NextResponse.json({ error: "Blog not found 12" }, { status: 404 });
+      blog = await BlogModel.findOne({ slug: id });
+    }
+
+    if (!blog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
     return NextResponse.json(blog, { status: 200 });

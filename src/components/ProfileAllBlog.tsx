@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import useSWR, { mutate } from "swr";
 import {
   Table,
   TableBody,
@@ -20,7 +21,7 @@ import { showError, showSuccess } from "@/utils/toast";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-// Define the Blog interface based on expected properties
+// Define the Blog interface
 interface Blog {
   _id: string;
   category: string;
@@ -29,17 +30,50 @@ interface Blog {
 
 const rowsPerPage = 3;
 
+// SWR Fetcher Function with Caching
+const fetcher = async (url: string) => {
+  const res = await fetch(url, { cache: "force-cache" }); // Use caching in fetch
+  if (!res.ok) throw new Error("Failed to fetch data");
+  return res.json();
+};
+
 export default function ProfileAllBlog() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [blogData, setBlogData] = useState<Blog[]>([]); // Explicitly type blogData
   const { data: session } = useSession();
+
+  // Use SWR with caching and revalidation settings
+  const { data, error } = useSWR("/api/blogs", fetcher, {
+    dedupingInterval: 60000, // Cache data for 60 seconds before re-fetching
+    revalidateOnFocus: false, // Prevent refetching when window regains focus
+    shouldRetryOnError: true, // Retry fetching if it fails
+    fallbackData: { blogs: [] }, // Provide default empty data
+  });
+
+  // Handle error state
+  if (error) {
+    showError({ message: "Failed to fetch blogs" });
+    return <p className="text-red-500">Error loading blogs...</p>;
+  }
+
+  if (!data) return <p className="text-gray-500">Loading...</p>;
+
+  const blogData: Blog[] = data.blogs || [];
+  const totalPages = Math.ceil(blogData.length / rowsPerPage);
+
+  // Paginated Data
+  const currentData = blogData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
 
       if (response.ok) {
-        setBlogData((prev) => prev.filter((blog) => blog._id !== id));
+        mutate("/api/blogs", async (cachedData) => {
+          return { blogs: cachedData.blogs.filter((blog: Blog) => blog._id !== id) };
+        }, false); // Update cache instantly without refetching
         showSuccess({ message: "Blog deleted successfully" });
       } else {
         showError({ message: "Failed to delete blog" });
@@ -52,42 +86,8 @@ export default function ProfileAllBlog() {
     }
   };
 
-  // Fetch Data
-  const fetchData = async () => {
-    try {
-      const response = await fetch("/api/blogs");
-      const data = await response.json();
-      // Ensure blogData is an array
-      if (data && Array.isArray(data.blogs)) {
-        setBlogData(data.blogs);
-      } else {
-        console.error("API did not return a blogs array", data);
-        setBlogData([]);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      showError({
-        message:
-          error instanceof Error ? error.message : "Failed to fetch data",
-      });
-      setBlogData([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const totalPages = Math.ceil(blogData.length / rowsPerPage);
-
-  // Paginated Data
-  const currentData = blogData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-
   return (
-    <div className="w-full max-w-6xl mx-auto shadow-lg p-6 rounded-lg border ">
+    <div className="w-full max-w-6xl mx-auto shadow-lg p-6 rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
@@ -120,7 +120,6 @@ export default function ProfileAllBlog() {
                   Delete
                 </button>
               </TableCell>
-
               <TableCell className="text-right">
                 <Link
                   href={`/blog/${blog._id}`}

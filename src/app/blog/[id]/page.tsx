@@ -1,5 +1,3 @@
-
-
 import Image from "next/image";
 import React from "react";
 import ReactMarkdown from "react-markdown";
@@ -139,7 +137,11 @@ export default async function BlogView({ params }: BlogViewProps) {
             // Code Blocks
             code: ({ node, ...props }) => {
               // Use optional chaining to safely handle potentially undefined node
-              const isInline = node?.tagName === "code" && !node?.children.some(child => child.type === "element" && child.tagName === "br");
+              const isInline =
+                node?.tagName === "code" &&
+                !node?.children.some(
+                  (child) => child.type === "element" && child.tagName === "br"
+                );
               return isInline ? (
                 <code
                   className="bg-gray-100 dark:bg-gray-700 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded-md font-mono text-sm"
@@ -175,10 +177,16 @@ export default async function BlogView({ params }: BlogViewProps) {
           })}
         </p>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+          <a
+            href="#"
+            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+          >
             Share
           </a>
-          <a href="#" className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+          <a
+            href="#"
+            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+          >
             Comment
           </a>
         </div>

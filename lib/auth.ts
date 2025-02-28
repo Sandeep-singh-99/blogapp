@@ -1,10 +1,10 @@
-import { AuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import { getMongoClient } from "./db"; 
 
-export async function getAuthOptions(): Promise<AuthOptions> {
+export async function getAuthOptions(): Promise<NextAuthOptions> {
   const client = await getMongoClient(); 
 
   return {

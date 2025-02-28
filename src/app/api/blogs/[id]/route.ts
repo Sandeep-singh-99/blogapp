@@ -3,11 +3,11 @@ import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
 import mongoose from "mongoose"; // Added missing import
 
-interface RouteParams {
-  params: {
-    id: string; 
-  };
-}
+// interface RouteParams {
+//   params: {
+//     id: string; 
+//   };
+// }
 
 interface BlogUpdateFields {
   title?: string;
@@ -20,7 +20,7 @@ interface BlogUpdateFields {
   thumbnailImage?: string;
 }
 
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await ConnectDB();
     const { id } = params; // Destructured correctly as a string
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: RouteParams) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await ConnectDB();
     const { id } = params; // Destructured correctly as a string
@@ -76,7 +76,7 @@ const UpdateSlug = (title: string): string => {
     .replace(/^-+|-+$/g, "");
 };
 
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await ConnectDB();
     const { id } = params; // Destructured correctly as a string

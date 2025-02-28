@@ -4,8 +4,10 @@ interface PageParams {
   id: string;
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
 async function getBlogData(id: string) {
-  const res = await fetch(`http://localhost:3000/api/blogs/${id}`);
+  const res = await fetch(`${baseUrl}/api/blogs/${id}`);
   if (!res.ok) {
     throw new Error("Failed to fetch blog data");
   }

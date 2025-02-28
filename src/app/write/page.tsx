@@ -4,7 +4,6 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { showError, showSuccess } from "@/utils/toast";
-
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
@@ -28,7 +27,6 @@ export default function Write() {
   const [tags, setTags] = useState("");
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [contentMarkdown, setContentMarkdown] = useState<string>("");
-
   const [contentImages, setContentImages] = useState<File[]>([]);
 
   async function onImageUpload(file: File, folder: string): Promise<string> {
@@ -63,14 +61,12 @@ export default function Write() {
     return url;
   }
 
-  // Handle thumbnail upload
   function handleThumbnailUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files?.[0]) {
       setThumbnailImage(event.target.files[0]);
     }
   }
 
-  // Handle form submission
   const handleSubmit = async () => {
     if (!title) return showError({ message: "Title is required!" });
     if (!category) return showError({ message: "Category is required!" });
@@ -82,12 +78,10 @@ export default function Write() {
     let thumbnailUrl = "";
     let contentImageUrl = "";
 
-    // Upload thumbnail image
     if (thumbnailImage) {
       thumbnailUrl = await onImageUpload(thumbnailImage, "thumbnails");
     }
 
-    // Upload content image (take the first image if multiple are uploaded)
     if (contentImages.length > 0) {
       contentImageUrl = await onImageUpload(contentImages[0], "blogs");
     }
@@ -176,11 +170,11 @@ export default function Write() {
       </div>
 
       {/* Markdown Editor & Preview */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4 h-[500px]">
         {/* Markdown Editor */}
-        <div className="w-full md:w-1/2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg p-4">
+        <div className="w-full md:w-1/2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg overflow-y-auto">
           <MdEditor
-            style={{ width: "100%", height: "500px" }}
+            style={{ width: "100%", height: "100%" }} // Changed to 100% to fill container
             onImageUpload={handleMarkdownImageUpload}
             value={contentMarkdown}
             onChange={({ text }) => setContentMarkdown(text)}
@@ -190,8 +184,10 @@ export default function Write() {
         </div>
 
         {/* Live Preview */}
-        <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold mb-2">👀 Live Preview</h2>
+        <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg overflow-y-auto">
+          <h2 className="text-xl font-bold mb-2  top-0 bg-gray-100 dark:bg-gray-900 z-10">
+            👀 Live Preview
+          </h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <MarkdownRenderer markdown={contentMarkdown} />
           </div>

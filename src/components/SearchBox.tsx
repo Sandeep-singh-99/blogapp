@@ -11,6 +11,15 @@ import {
   CommandGroup,
 } from "./ui/command";
 
+interface Blog {
+  title: string;
+  slug: string;
+}
+
+interface Slug {
+  slug: string;
+}
+
 interface SearchBoxProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,8 +27,8 @@ interface SearchBoxProps {
 
 export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<{ title: string; slug: string }[]>([]);
-  const [defaultSlugs, setDefaultSlugs] = useState<{ slug: string }[]>([]);
+  const [results, setResults] = useState<Blog[]>([]);
+  const [defaultSlugs, setDefaultSlugs] = useState<Slug[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -76,7 +85,7 @@ export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
                   key={blog.slug}
                   onSelect={() => {
                     router.push(`/blog/${blog.slug}`);
-                    onClose(); 
+                    onClose();
                   }}
                 >
                   {blog.title}
@@ -91,8 +100,8 @@ export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
                   <CommandItem
                     key={blog.slug}
                     onSelect={() => {
-                      router.push(`/blog/${blog.slug}`)
-                      onClose()
+                      router.push(`/blog/${blog.slug}`);
+                      onClose();
                     }}
                   >
                     {blog.slug}

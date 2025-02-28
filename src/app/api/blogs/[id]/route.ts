@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
-import mongoose from "mongoose"; // Added missing import
+import mongoose from "mongoose";
 
-// interface RouteParams {
-//   params: {
-//     id: string; 
-//   };
-// }
+
 
 interface BlogUpdateFields {
   title?: string;
@@ -20,10 +16,12 @@ interface BlogUpdateFields {
   thumbnailImage?: string;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+// GET handler with explicit typing
+export async function GET(req: NextRequest,  { params }: { params: Promise<{ id: string }>}) {
   try {
     await ConnectDB();
-    const { id } = params; // Destructured correctly as a string
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
     let blog = null;
 
@@ -49,10 +47,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+// DELETE handler with explicit typing
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await ConnectDB();
-    const { id } = params; // Destructured correctly as a string
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
     await BlogModel.findByIdAndDelete(id);
 
@@ -76,10 +76,13 @@ const UpdateSlug = (title: string): string => {
     .replace(/^-+|-+$/g, "");
 };
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+// PUT handler with explicit typing
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await ConnectDB();
-    const { id } = params; // Destructured correctly as a string
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+
     const formData = await req.formData();
 
     const updateFields: BlogUpdateFields = {};

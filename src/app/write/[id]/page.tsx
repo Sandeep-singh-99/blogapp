@@ -1,5 +1,8 @@
-// app/write/[id]/page.tsx
 import EditBlog from "@/components/EditBlog";
+
+interface PageParams {
+  id: string;
+}
 
 async function getBlogData(id: string) {
   const res = await fetch(`http://localhost:3000/api/blogs/${id}`);
@@ -9,8 +12,15 @@ async function getBlogData(id: string) {
   return res.json();
 }
 
-export default async function EditBlogPage({ params }: { params: { id: string } }) {
-  const blogData = await getBlogData(params.id);
+export default async function EditBlogPage({
+  params,
+}: {
+  params: Promise<PageParams>;
+}) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
+  const blogData = await getBlogData(id);
 
   return (
     <div>

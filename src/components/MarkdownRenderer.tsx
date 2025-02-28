@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { showSuccess } from "@/utils/toast";
 import Image from "next/image";
 import React from "react";
@@ -6,15 +6,25 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-// Custom Code Block Component with Copy Button
-const CodeBlock = ({ inline, className, children }) => {
+// Define the props type for the CodeBlock component
+interface CodeBlockProps {
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const CodeBlock: React.FC<CodeBlockProps> = ({
+  inline,
+  className,
+  children,
+}) => {
   const match = /language-(\w+)/.exec(className || "");
-  const code = String(children).trim();
+  const code = String(children ?? "").trim();
 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(code);
-      showSuccess({message: "Copied to clipboard!"});
+      showSuccess({ message: "Copied to clipboard!" });
     } catch (err) {
       console.error("Failed to copy:", err);
     }
@@ -34,13 +44,24 @@ const CodeBlock = ({ inline, className, children }) => {
     </div>
   ) : (
     <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded text-sm">
-      {children}
+      {children ?? ""}
     </code>
   );
 };
 
-// Custom ReactMarkdown Component
-const MarkdownRenderer = ({ markdown }) => {
+// Define props type for MarkdownRenderer
+interface MarkdownRendererProps {
+  markdown: string;
+}
+
+// Define props type for the img component, aligning with ImgHTMLAttributes
+interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  src?: string;
+  alt?: string;
+  // width and height are inherited from ImgHTMLAttributes as string | number | undefined
+}
+
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ markdown }) => {
   return (
     <ReactMarkdown
       components={{
@@ -65,16 +86,24 @@ const MarkdownRenderer = ({ markdown }) => {
           />
         ),
         // Images
-        img: ({ ...props }) => (
-          <Image
-          src={src || ""}
-          alt={alt || "Markdown image"}
-          width={800} // Adjust width as needed
-          height={500} // Adjust height as needed
-          className="rounded-xl max-w-full h-auto my-6 shadow-md"
-          {...props}
-        />
-        ),
+        img: ({ src, alt, width, height, ...props }: ImageProps) => {
+          // Convert width and height to numbers, with defaults if undefined
+          const imageWidth =
+            typeof width === "string" ? parseInt(width, 10) : width || 800;
+          const imageHeight =
+            typeof height === "string" ? parseInt(height, 10) : height || 500;
+
+          return (
+            <Image
+              src={src || ""}
+              alt={alt || "Markdown image"}
+              width={imageWidth}
+              height={imageHeight}
+              className="rounded-xl max-w-full h-auto my-6 shadow-md"
+              {...props}
+            />
+          );
+        },
         // Links
         a: ({ ...props }) => (
           <a

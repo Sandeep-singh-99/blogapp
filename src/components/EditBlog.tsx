@@ -6,13 +6,30 @@ import MarkdownIt from "markdown-it";
 import { showError, showSuccess } from "@/utils/toast";
 import MarkdownRenderer from "./MarkdownRenderer";
 
+interface BlogData {
+  _id?: string;
+  title?: string;
+  category?: string;
+  tags?: string | string[];
+  markdown?: string;
+  thumbnailImage?: string;
+  contentImage?: string;
+}
+
 const mdParser = new MarkdownIt();
 
-export default function EditBlog({ initialData = null }) {
+export default function EditBlog({
+  initialData = null,
+}: {
+  initialData?: BlogData | null;
+}) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [category, setCategory] = useState(initialData?.category || "");
-  const [tags, setTags] = useState(initialData?.tags || "");
-
+  const [tags, setTags] = useState(
+    Array.isArray(initialData?.tags)
+      ? initialData.tags.join(",")
+      : initialData?.tags || ""
+  );
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [contentMarkdown, setContentMarkdown] = useState(
     initialData?.markdown || ""
@@ -76,7 +93,7 @@ export default function EditBlog({ initialData = null }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", category);
-    formData.append("tags", tags);
+    formData.append("tags", tags); // tags is now guaranteed to be a string
     formData.append("markdown", contentMarkdown);
     formData.append("content", contentMarkdown);
     formData.append("thumbnailImage", thumbnailUrl);
@@ -84,7 +101,7 @@ export default function EditBlog({ initialData = null }) {
 
     try {
       let response;
-      if (initialData) {
+      if (initialData?._id) {
         response = await fetch(`/api/blogs/${initialData._id}`, {
           method: "PUT",
           body: formData,
@@ -118,7 +135,7 @@ export default function EditBlog({ initialData = null }) {
       }
     } catch (error) {
       console.error("Error:", error);
-      showError({ message: "Error: " + error });
+      showError({ message: "Error: " + String(error) });
     }
   };
 
@@ -170,7 +187,6 @@ export default function EditBlog({ initialData = null }) {
       </div>
 
       {/* Markdown Editor */}
-
       <div className="flex flex-col md:flex-row gap-4">
         {/* Markdown Editor */}
         <div className="w-full md:w-1/2">
@@ -185,7 +201,6 @@ export default function EditBlog({ initialData = null }) {
         </div>
 
         {/* Live Preview */}
-        {/* Live Preview with Dark Mode Support */}
         <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg">
           <h2 className="text-xl font-bold mb-2">👀 Live Preview</h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">

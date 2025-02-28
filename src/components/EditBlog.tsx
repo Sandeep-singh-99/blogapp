@@ -4,25 +4,26 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { showError, showSuccess } from "@/utils/toast";
+import MarkdownRenderer from "./MarkdownBlock";
 
 const mdParser = new MarkdownIt();
-
 
 export default function EditBlog({ initialData = null }) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [category, setCategory] = useState(initialData?.category || "");
   const [tags, setTags] = useState(initialData?.tags || "");
- 
+
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
-  const [contentMarkdown, setContentMarkdown] = useState(initialData?.markdown || "");
+  const [contentMarkdown, setContentMarkdown] = useState(
+    initialData?.markdown || ""
+  );
   const [contentImages, setContentImages] = useState<File[]>([]);
 
-  
   async function onImageUpload(file: File, folder: string): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);
-    formData.append("upload_preset", "j6l66rqt"); 
+    formData.append("upload_preset", "j6l66rqt");
 
     try {
       const response = await fetch(
@@ -45,7 +46,7 @@ export default function EditBlog({ initialData = null }) {
   // Handle Markdown Image Upload
   async function handleMarkdownImageUpload(file: File) {
     const url = await onImageUpload(file, "blogs");
-    if (url) setContentImages((prev) => [...prev, file]); 
+    if (url) setContentImages((prev) => [...prev, file]);
     return url;
   }
 
@@ -62,7 +63,6 @@ export default function EditBlog({ initialData = null }) {
       return alert("Please fill in all fields!");
     }
 
-    
     let thumbnailUrl = initialData?.thumbnailImage || "";
     let contentImageUrl = "";
 
@@ -85,7 +85,6 @@ export default function EditBlog({ initialData = null }) {
     try {
       let response;
       if (initialData) {
-       
         response = await fetch(`/api/blogs/${initialData._id}`, {
           method: "PUT",
           body: formData,
@@ -101,9 +100,11 @@ export default function EditBlog({ initialData = null }) {
       const responseData = await response.json();
       if (response.ok) {
         showSuccess({
-          message: initialData ? "Blog updated successfully!" : "Blog published successfully!",
+          message: initialData
+            ? "Blog updated successfully!"
+            : "Blog published successfully!",
         });
-     
+
         if (!initialData) {
           setTitle("");
           setCategory("");
@@ -169,13 +170,29 @@ export default function EditBlog({ initialData = null }) {
       </div>
 
       {/* Markdown Editor */}
-      <MdEditor
-        style={{ width: "100%", height: "500px" }}
-        onImageUpload={handleMarkdownImageUpload}
-        value={contentMarkdown}
-        onChange={({ text }) => setContentMarkdown(text)}
-        renderHTML={(text) => mdParser.render(text)}
-      />
+
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Markdown Editor */}
+        <div className="w-full md:w-1/2">
+          <MdEditor
+            style={{ width: "100%", height: "500px" }}
+            onImageUpload={handleMarkdownImageUpload}
+            value={contentMarkdown}
+            onChange={({ text }) => setContentMarkdown(text)}
+            renderHTML={(text) => mdParser.render(text)}
+            view={{ menu: true, md: true, html: false }}
+          />
+        </div>
+
+        {/* Live Preview */}
+        {/* Live Preview with Dark Mode Support */}
+        <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg">
+          <h2 className="text-xl font-bold mb-2">👀 Live Preview</h2>
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <MarkdownRenderer markdown={contentMarkdown} />
+          </div>
+        </div>
+      </div>
 
       {/* Submit Button */}
       <button

@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const contentImage = formData.get("contentImage") as string;
     const thumbnailImage = formData.get("thumbnailImage") as string;
 
-    if (!title || !category || !tags || !markdown || !contentImage || !thumbnailImage) {
+    if (!title || !category || !tags || !markdown || !thumbnailImage) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       content: markdown, 
       slug: generateSlug(title),
       author: session.user.id,
-      contentImage,
+      ...(contentImage ? { contentImage } : {}),
       thumbnailImage,
     });
 

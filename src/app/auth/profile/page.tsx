@@ -19,15 +19,17 @@ export default function Profile() {
           <div className="w-full h-1 mt-6 bg-gradient-to-r from-[#8b72ff] via-[#ff72d2] to-[#ff8e72] rounded-full" />
         </div>
 
-        <h1 className="text-3xl font-semibold font-serif">All Blogs</h1>
+        {/* <h1 className="text-3xl font-semibold font-serif">All Blogs</h1> */}
         <div className="bg-gray-400 dark:bg-gray-800 w-full h-1 my-4"></div>
         <div className="mb-5">
           <ProfileAllBlog />
         </div>
+        
 
-        <h1 className="text-3xl font-semibold font-serif">Graphs</h1>
+        {/* <h1 className="text-3xl font-semibold font-serif">Graphs</h1> */}
         <div className="bg-gray-400 dark:bg-gray-800 w-full h-1 my-4"></div>
         <BlogGraph />
+
       </div>
     </div>
   );

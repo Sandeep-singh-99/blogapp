@@ -38,8 +38,7 @@ export default function ProfileAllBlog() {
         showError({ message: "Failed to delete blog" });
       }
     } catch (error) {
-      console.error("Error deleting blog:", error);
-      showError({ message: "Failed to delete blog" });
+      showError({ message: error instanceof Error ? error.message : "Failed to Delete Data" });
     }
   };
 
@@ -48,9 +47,6 @@ export default function ProfileAllBlog() {
     try {
       const response = await fetch("/api/blogs");
       const data = await response.json();
-
-     
-
       // Ensure blogData is an array
       if (data && Array.isArray(data.blogs)) {
         setBlogData(data.blogs);
@@ -58,11 +54,9 @@ export default function ProfileAllBlog() {
         console.error("API did not return a blogs array", data);
         setBlogData([]); 
       }
-
-      showSuccess({ message: "Data fetched successfully" });
     } catch (error) {
       console.error("Error fetching data:", error);
-      showError({ message: "Failed to fetch data" });
+      showError({ message: error instanceof Error ? error.message : "Failed to fetch data" });
       setBlogData([]); 
     }
   };
@@ -80,7 +74,7 @@ export default function ProfileAllBlog() {
   );
 
   return (
-    <div className="w-full max-w-6xl mx-auto shadow-md p-6 rounded-md border-2 border-gray-200">
+    <div className="w-full max-w-6xl mx-auto shadow-lg p-6 rounded-lg border ">
       <Table>
         <TableHeader>
           <TableRow>
@@ -94,7 +88,7 @@ export default function ProfileAllBlog() {
         <TableBody>
           {currentData.map((blog) => (
             <TableRow key={blog._id}>
-              <TableCell className="font-medium">
+              <TableCell className="font-semibold">
                 {session ? session.user?.name : "Unknown"}
               </TableCell>
               <TableCell>{blog.category}</TableCell>

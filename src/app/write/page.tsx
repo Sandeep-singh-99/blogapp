@@ -5,7 +5,22 @@ import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { showError, showSuccess } from "@/utils/toast";
 
-const mdParser = new MarkdownIt();
+import Prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+import MarkdownRenderer from "@/components/MarkdownBlock";
+
+const mdParser = new MarkdownIt({
+  highlight: function (code, lang) {
+    if (lang && Prism.languages[lang]) {
+      return `<pre class="language-${lang}"><code>${Prism.highlight(
+        code,
+        Prism.languages[lang],
+        lang
+      )}</code></pre>`;
+    }
+    return `<pre class="language-text"><code>${code}</code></pre>`;
+  },
+});
 
 export default function Write() {
   const [title, setTitle] = useState("");
@@ -13,15 +28,14 @@ export default function Write() {
   const [tags, setTags] = useState("");
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [contentMarkdown, setContentMarkdown] = useState<string>("");
-  
+
   const [contentImages, setContentImages] = useState<File[]>([]);
 
- 
   async function onImageUpload(file: File, folder: string): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);
-    formData.append("upload_preset", "j6l66rqt"); 
+    formData.append("upload_preset", "j6l66rqt");
 
     try {
       const response = await fetch(
@@ -43,10 +57,9 @@ export default function Write() {
     }
   }
 
- 
   async function handleMarkdownImageUpload(file: File) {
     const url = await onImageUpload(file, "blogs");
-    if (url) setContentImages((prev) => [...prev, file]); 
+    if (url) setContentImages((prev) => [...prev, file]);
     return url;
   }
 
@@ -59,9 +72,12 @@ export default function Write() {
 
   // Handle form submission
   const handleSubmit = async () => {
-    if (!title || !category || !tags || !contentMarkdown) {
-      return alert("Please fill in all fields!");
-    }
+    if (!title) return showError({ message: "Title is required!" });
+    if (!category) return showError({ message: "Category is required!" });
+    if (!tags) return showError({ message: "Tags are required!" });
+    if (!contentMarkdown) return showError({ message: "Content is required!" });
+    if (!thumbnailImage)
+      return showError({ message: "Thumbnail is required!" });
 
     let thumbnailUrl = "";
     let contentImageUrl = "";
@@ -83,7 +99,10 @@ export default function Write() {
     formData.append("markdown", contentMarkdown);
     formData.append("content", contentMarkdown);
     formData.append("thumbnailImage", thumbnailUrl);
-    formData.append("contentImage", contentImageUrl);
+    formData.append(
+      "contentImage",
+      contentImageUrl || "https://your-default-image-url.com"
+    );
 
     try {
       const response = await fetch("/api/blogs", {
@@ -102,7 +121,6 @@ export default function Write() {
         setContentImages([]);
         showSuccess({ message: "Blog published successfully!" });
       } else {
-        alert("Error: " + responseData.error);
         showError({ message: "Error: " + responseData.error });
       }
     } catch (error) {
@@ -111,8 +129,10 @@ export default function Write() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-5xl mx-auto shadow-2xl rounded-lg border-2 my-10">
-      <h1 className="text-3xl font-bold">📝 Create a New Blog</h1>
+    <div className="flex flex-col gap-6 p-6 max-w-5xl mx-auto shadow-lg rounded-lg border dark:border-gray-600 my-10 transition-all bg-white dark:bg-gray-800">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        📝 Create a New Blog
+      </h1>
 
       {/* Blog Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -121,27 +141,27 @@ export default function Write() {
           placeholder="Blog Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border p-3 rounded-lg bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
+          className="border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
         />
         <input
           type="text"
           placeholder="Category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="border p-3 rounded-lg bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
+          className="border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
         />
         <input
           type="text"
           placeholder="Tags (comma-separated)"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          className="border p-3 rounded-lg bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
+          className="border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
         />
       </div>
 
       {/* Thumbnail Upload */}
-      <div className="flex gap-4">
-        <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+      <div className="flex gap-4 items-center">
+        <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-600 transition">
           🖼 Upload Thumbnail
           <input
             type="file"
@@ -151,28 +171,40 @@ export default function Write() {
           />
         </label>
         {thumbnailImage && (
-          <p className="text-green-600">✅ Thumbnail selected</p>
+          <p className="text-green-500">✅ Thumbnail selected</p>
         )}
       </div>
 
-      {/* Markdown Editor */}
-      <MdEditor
-        style={{ width: "100%", height: "500px" }}
-        onImageUpload={handleMarkdownImageUpload}
-        value={contentMarkdown}
-        onChange={({ text }) => setContentMarkdown(text)}
-        renderHTML={(text) => mdParser.render(text)}
-      />
+      {/* Markdown Editor & Preview */}
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Markdown Editor */}
+        <div className="w-full md:w-1/2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg p-4">
+          <MdEditor
+            style={{ width: "100%", height: "500px" }}
+            onImageUpload={handleMarkdownImageUpload}
+            value={contentMarkdown}
+            onChange={({ text }) => setContentMarkdown(text)}
+            renderHTML={(text) => mdParser.render(text)}
+            view={{ menu: true, md: true, html: false }}
+          />
+        </div>
+
+        {/* Live Preview */}
+        <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold mb-2">👀 Live Preview</h2>
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <MarkdownRenderer markdown={contentMarkdown} />
+          </div>
+        </div>
+      </div>
 
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        className="bg-blue-500 text-white px-6 py-3 rounded-lg"
+        className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition"
       >
         🚀 Publish Blog
       </button>
     </div>
   );
 }
-
-

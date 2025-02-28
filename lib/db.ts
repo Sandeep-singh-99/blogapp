@@ -23,7 +23,7 @@ if (!uri) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-// ✅ Function to connect Mongoose
+
 export async function ConnectDB() {
   if (cachedMongoose.conn) {
     return cachedMongoose.conn;
@@ -48,7 +48,7 @@ export async function ConnectDB() {
   return cachedMongoose.conn;
 }
 
-// ✅ Function to connect MongoClient (For NextAuth)
+
 export async function getMongoClient() {
   if (cachedMongoClient.conn) {
     return cachedMongoClient.conn;

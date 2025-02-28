@@ -1,8 +1,10 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectDB } from "../../../../lib/db";
-import { authOptions } from "../auth/[...nextauth]/route";
+
 import BlogModel from "../../../../models/blog";
+import { getAuthOptions } from "../../../../lib/auth";
+
 
 
 
@@ -14,7 +16,7 @@ const generateSlug = (title: string) => {
 export async function POST(req: NextRequest) {
   try {
     await ConnectDB();
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(await getAuthOptions());
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -62,16 +64,13 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     await ConnectDB();
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(await getAuthOptions());
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const blogs = await BlogModel.find({author: session.user.id}).sort({ createdAt: -1 });
-
-    console.log("Blogs:", blogs);
-    
 
     return NextResponse.json({ blogs }, { status: 200 });
   } catch (error) {

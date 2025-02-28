@@ -1,13 +1,42 @@
-import NextAuth, { DefaultSession } from "next-auth";
+// import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+
+// declare module "next-auth" {
+//   interface Session {
+//     user: {
+//       id: string; 
+//     } & DefaultSession["user"];
+//   }
+
+//   interface User {
+//     id: string; 
+//   }
+// }
+
+
+
+
+
+
 
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string; // Add 'id' to user type
+      id: string;
+      accessToken?: string;
+      provider?: string;
     } & DefaultSession["user"];
   }
 
-  interface User {
-    id: string; // Ensure User type has 'id'
+  interface User extends DefaultUser {
+    id: string;
+    accessToken?: string;
+    provider?: string;
+  }
+
+  interface JWT {
+    id: string;
+    accessToken?: string;
+    provider?: string;
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import {
   Command,
   CommandInput,
@@ -25,43 +26,27 @@ interface SearchBoxProps {
   onClose: () => void;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Blog[]>([]);
-  const [defaultSlugs, setDefaultSlugs] = useState<Slug[]>([]);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (isOpen) {
-      fetch(`/api/blogs/random-slugs`)
-        .then((res) => res.json())
-        .then((data) => setDefaultSlugs(data.slugs))
-        .catch((err) => console.error("Error fetching slugs:", err));
-    }
-  }, [isOpen]);
+  // Fetch default slugs using SWR
+  const { data: defaultData } = useSWR(
+    isOpen ? "/api/blogs/random-slugs" : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const defaultSlugs: Slug[] = defaultData?.slugs || [];
 
-  // Debounced search function
-  const fetchResults = useCallback((searchQuery: string) => {
-    if (searchQuery.length > 1) {
-      setLoading(true);
-      fetch(`/api/blogs/search?q=${searchQuery}`)
-        .then((res) => res.json())
-        .then((data) => setResults(data.blogs))
-        .catch((err) => console.error("Error fetching search results:", err))
-        .finally(() => setLoading(false));
-    } else {
-      setResults([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      fetchResults(query);
-    }, 300);
-
-    return () => clearTimeout(delayDebounce);
-  }, [query, fetchResults]);
+  // Fetch search results using SWR
+  const { data: searchData, isValidating } = useSWR(
+    query.length > 1 ? `/api/blogs/search?q=${query}` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const results: Blog[] = searchData?.blogs || [];
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
@@ -76,7 +61,7 @@ export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
 
         {/* Search Results & Default Slugs */}
         <CommandList>
-          {loading ? (
+          {isValidating ? (
             <CommandEmpty>Loading...</CommandEmpty>
           ) : results.length > 0 ? (
             <CommandGroup heading="Search Results">

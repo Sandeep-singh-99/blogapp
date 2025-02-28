@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
-import mongoose from "mongoose";
 
 
 interface RouteParams {
   params: {
-    id: string;
+    id: Promise<{ id:string}>;
   };
 }
 
@@ -14,7 +13,7 @@ interface RouteParams {
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     await ConnectDB();
-    const { id } = params;
+    const id  = params.id
 
     // if (!id) {
     //   return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -22,9 +21,9 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     let blog = null;
 
-    if (mongoose.Types.ObjectId.isValid(id)) {
+    // if (mongoose.Types.ObjectId.isValid(id)) {
       blog = await BlogModel.findById(id);
-    }
+    // }
 
     if (!blog) {
       blog = await BlogModel.findOne({ slug: id });
@@ -48,7 +47,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     await ConnectDB();
-    const { id } = params;
+    const id  = params.id
 
     await BlogModel.findByIdAndDelete(id);
 
@@ -126,10 +125,10 @@ const UpdateSlug = (title: string) => {
 
 
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: RouteParams) {
   try {
     await ConnectDB();
-    const { id } = params;
+    const id  = params.id
     const formData = await req.formData();
 
     // Create an empty update object

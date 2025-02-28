@@ -4,10 +4,8 @@ import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import { getMongoClient } from "./db"; 
 
-export async function getAuthOptions(): Promise<NextAuthOptions> {
-  const client = await getMongoClient(); 
-
-  return {
+const client = await getMongoClient(); 
+export const  getAuthOptions: NextAuthOptions = {
     providers: [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -30,7 +28,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
           token.provider = account.provider;
         }
         if (user) {
-          token.id = user.id || (user as any)._id?.toString();
+          token.id = user.id || (user as { _id?: { toString: () => string } })._id?.toString();
           token.name = user.name;
           token.email = user.email;
           token.image = user.image;
@@ -40,12 +38,13 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
 
       async session({ session, token }) {
         if (session.user) {
-          (session.user as any).id = token.id;
-          (session.user as any).accessToken = token.accessToken;
-          (session.user as any).provider = token.provider;
+          session.user.id = token.id as string;
+          session.user.accessToken = token.accessToken as string;
+          session.user.provider = token.provider as string;
         }
         return session;
       },
     },
-  };
 }
+
+

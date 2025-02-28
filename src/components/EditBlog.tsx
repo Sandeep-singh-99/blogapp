@@ -4,7 +4,7 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { showError, showSuccess } from "@/utils/toast";
-import MarkdownRenderer from "./MarkdownBlock";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 const mdParser = new MarkdownIt();
 

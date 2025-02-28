@@ -7,7 +7,7 @@ import { showError, showSuccess } from "@/utils/toast";
 
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
-import MarkdownRenderer from "@/components/MarkdownBlock";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 const mdParser = new MarkdownIt({
   highlight: function (code, lang) {

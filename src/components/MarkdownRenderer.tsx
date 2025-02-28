@@ -1,12 +1,13 @@
 'use client'
 import { showSuccess } from "@/utils/toast";
+import Image from "next/image";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 // Custom Code Block Component with Copy Button
-const CodeBlock = ({ inline, className, children, ...props }) => {
+const CodeBlock = ({ inline, className, children }) => {
   const match = /language-(\w+)/.exec(className || "");
   const code = String(children).trim();
 
@@ -65,10 +66,14 @@ const MarkdownRenderer = ({ markdown }) => {
         ),
         // Images
         img: ({ ...props }) => (
-          <img
-            className="rounded-xl max-w-full h-auto my-6 shadow-md"
-            {...props}
-          />
+          <Image
+          src={src || ""}
+          alt={alt || "Markdown image"}
+          width={800} // Adjust width as needed
+          height={500} // Adjust height as needed
+          className="rounded-xl max-w-full h-auto my-6 shadow-md"
+          {...props}
+        />
         ),
         // Links
         a: ({ ...props }) => (

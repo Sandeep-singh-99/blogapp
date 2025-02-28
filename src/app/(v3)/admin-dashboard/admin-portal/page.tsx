@@ -18,16 +18,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function AdminPortal() {
-  const [theme, setTheme] = useState("dark");
-
   useEffect(() => {
     const savedTheme = localStorage.getItem("admin-theme") || "dark";
-    setTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
+  
 
   return (
     <Tabs defaultValue="add-blog" className="w-full h-full">

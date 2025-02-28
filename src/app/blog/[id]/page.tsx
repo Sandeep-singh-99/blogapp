@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { notFound } from "next/navigation";
-import MarkdownRenderer from "@/components/MarkdownBlock";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 

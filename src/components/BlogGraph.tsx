@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartData,
 } from "chart.js";
 
 // Register required Chart.js components
@@ -23,8 +24,10 @@ type StatsData = {
   data: number[];
 };
 
+type BarChartData = ChartData<"bar", number[], string>;
+
 export default function BlogGraph() {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<BarChartData | null>(null);
   const {data: session } = useSession();
 
   useEffect(() => {

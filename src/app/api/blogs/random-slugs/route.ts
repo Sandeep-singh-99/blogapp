@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
 import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
 
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     await ConnectDB();
 

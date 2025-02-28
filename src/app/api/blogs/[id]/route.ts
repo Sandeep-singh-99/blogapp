@@ -1,29 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
-
+import mongoose from "mongoose"; // Added missing import
 
 interface RouteParams {
   params: {
-    id: Promise<{ id:string}>;
+    id: string; 
   };
 }
 
+interface BlogUpdateFields {
+  title?: string;
+  slug?: string;
+  category?: string;
+  tags?: string[];
+  markdown?: string;
+  content?: string;
+  contentImage?: string;
+  thumbnailImage?: string;
+}
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     await ConnectDB();
-    const id  = params.id
-
-    // if (!id) {
-    //   return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-    // }
+    const { id } = params; // Destructured correctly as a string
 
     let blog = null;
 
-    // if (mongoose.Types.ObjectId.isValid(id)) {
+    if (mongoose.Types.ObjectId.isValid(id)) {
       blog = await BlogModel.findById(id);
-    // }
+    }
 
     if (!blog) {
       blog = await BlogModel.findOne({ slug: id });
@@ -43,11 +49,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     await ConnectDB();
-    const id  = params.id
+    const { id } = params; // Destructured correctly as a string
 
     await BlogModel.findByIdAndDelete(id);
 
@@ -64,77 +69,21 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-const UpdateSlug = (title: string) => {
+const UpdateSlug = (title: string): string => {
   return title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 };
 
-
-// export async function PUT(req: NextRequest, { params }: RouteParams) {
-//   try {
-//     await ConnectDB();
-//     const { id } = params;
-//     const formData = await req.formData();
-
-//     const title = formData.get("title") as string;
-//     const category = formData.get("category") as string;
-//     const tags = formData.get("tags") as string;
-//     const markdown = formData.get("markdown") as string;
-//     const contentImage = formData.get("contentImage") as string;
-//     const thumbnailImage = formData.get("thumbnailImage") as string;
-
-//     if (
-//       !title ||
-//       !category ||
-//       !tags ||
-//       !markdown ||
-//       !contentImage ||
-//       !thumbnailImage
-//     ) {
-//       return NextResponse.json(
-//         { error: "Missing required fields" },
-//         { status: 400 }
-//       );
-//     }
-
-//     await BlogModel.findByIdAndUpdate(id, {
-//       title,
-//       category,
-//       tags: tags.split(",").map((tag) => tag.trim()),
-//       markdown,
-//       content: markdown,
-//       slug: UpdateSlug(title),
-//       contentImage,
-//       thumbnailImage,
-//     });
-
-//     return NextResponse.json(
-//       { success: true, message: "Blog updated successfully!" },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     console.error("Error updating blog:", error);
-//     return NextResponse.json(
-//       { error: "Internal server error" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-
-
 export async function PUT(req: NextRequest, { params }: RouteParams) {
   try {
     await ConnectDB();
-    const id  = params.id
+    const { id } = params; // Destructured correctly as a string
     const formData = await req.formData();
 
-    // Create an empty update object
-    const updateFields: Record<string, any> = {};
+    const updateFields: BlogUpdateFields = {};
 
-    // Check and add fields only if they exist in the request
     if (formData.has("title")) {
       updateFields.title = formData.get("title") as string;
       updateFields.slug = UpdateSlug(updateFields.title);
@@ -158,7 +107,6 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       updateFields.thumbnailImage = formData.get("thumbnailImage") as string;
     }
 
-    // If no valid fields are present, return an error response
     if (Object.keys(updateFields).length === 0) {
       return NextResponse.json(
         { error: "No valid fields provided for update" },
@@ -166,7 +114,6 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Perform the update
     await BlogModel.findByIdAndUpdate(id, updateFields, { new: true });
 
     return NextResponse.json(

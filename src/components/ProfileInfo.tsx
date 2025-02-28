@@ -6,16 +6,21 @@ import { showError, showSuccess } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 
 function ProfileInfo() {
-    const router = useRouter();
+  const router = useRouter();
   const { data: session } = useSession();
 
   const handleLogout = async () => {
     try {
-      const res = await signOut({ redirect: false }); 
-      router.push("/"); 
+      await signOut({ redirect: false });
+      router.push("/");
       showSuccess({ message: "Logged out successfully" });
     } catch (error) {
-      showError({ message: "Failed to logout" });
+      showError({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Request failed. Please try again.",
+      });
     }
   };
   return (
@@ -32,12 +37,19 @@ function ProfileInfo() {
               className="rounded-full"
             />
             <div>
-                <h2 className="text-white text-2xl font-[500] font-serif">{session.user?.name}</h2>
-                <p className="text-white font-[400]">{session.user?.email}</p>
+              <h2 className="text-white text-2xl font-[500] font-serif">
+                {session.user?.name}
+              </h2>
+              <p className="text-white font-[400]">{session.user?.email}</p>
             </div>
           </div>
           <div>
-            <button onClick={() => handleLogout()} className="bg-blue-500 hover:bg-blue-700 p-2 rounded-lg text-white">Logout</button>
+            <button
+              onClick={() => handleLogout()}
+              className="bg-blue-500 hover:bg-blue-700 p-2 rounded-lg text-white"
+            >
+              Logout
+            </button>
           </div>
         </div>
       ) : (

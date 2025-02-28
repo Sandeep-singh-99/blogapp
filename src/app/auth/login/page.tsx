@@ -2,20 +2,29 @@
 import React from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { signIn } from "next-auth/react";
+import { showError } from "@/utils/toast";
 
 export default function Login() {
   const handleGoogleSignIn = async () => {
     try {
       const result = await signIn("google", { callbackUrl: "/" });
       if (result?.error) throw new Error(result.error);
-    } catch (error) {}
+    } catch (error) {
+      showError({
+        message: error instanceof Error ? error.message : "Request failed. Please try again."
+      })
+    }
   };
 
   const handleGithubSignIn = async () => {
     try {
       const result = await signIn("github", { callbackUrl: "/" });
       if (result?.error) throw new Error(result.error);
-    } catch (error) {}
+    } catch (error) {
+      showError({
+        message: error instanceof Error ? error.message : "Request failed. Please try again."
+      })
+    }
   };
 
   return (

@@ -22,9 +22,11 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ blogs }, { status: 200 });
   } catch (error) {
-    console.error("Error in GET /api/blogs/search:", error);
     return NextResponse.json(
-      { message: "Something went wrong" },
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 }
     );
   }

@@ -13,7 +13,6 @@ import {
   ChartData,
 } from "chart.js";
 
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -23,19 +22,18 @@ ChartJS.register(
   Legend
 );
 
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 
 type StatsData = {
-  labels: string[];
+  labels: string[]; // Dates in "YYYY-MM-DD" format
   data: number[];
 };
 
 type BarChartData = ChartData<"bar", number[], string>;
 
 const fetcher = async (url: string) => {
-  const res = await fetch(url, { cache: "force-cache" });
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch data");
   return res.json();
 };
@@ -43,15 +41,15 @@ const fetcher = async (url: string) => {
 export default function BlogGraph() {
   const { data: session } = useSession();
 
-  
   const { data, error } = useSWR<StatsData>(
     session?.user.id ? "/api/blogs/stats" : null,
     fetcher,
     {
-      dedupingInterval: 60000,
-      revalidateOnFocus: false,
+      dedupingInterval: 30000,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
       shouldRetryOnError: true,
-      fallbackData: { labels: [], data: [] },
+      fallbackData: undefined,
     }
   );
 
@@ -64,11 +62,11 @@ export default function BlogGraph() {
   }
 
   const chartData: BarChartData = {
-    labels: data.labels,
+    labels: data?.labels || [],
     datasets: [
       {
-        label: "Blogs Uploaded",
-        data: data.data,
+        label: "Blogs Uploaded Per Day",
+        data: data?.data || [],
         backgroundColor: "#2563eb",
       },
     ],
@@ -86,12 +84,19 @@ export default function BlogGraph() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: {
-                position: "top" as const,
-              },
+              legend: { position: "top" as const },
               title: {
                 display: true,
                 text: "User Blog Uploads",
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  autoSkip: true,
+                  maxRotation: 45,
+                  minRotation: 0,
+                },
               },
             },
           }}

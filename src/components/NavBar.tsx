@@ -1,18 +1,26 @@
 "use client";
+
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { Moon, Sun } from "lucide-react";
 import SearchBox from "./SearchBox";
 import Image from "next/image";
-import { useTheme } from "@/context/ThemeContext";
-
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
+
+// ShadCN UI Components
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export default function NavBar() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const { data: session } = useSession();
 
   return (
@@ -21,13 +29,13 @@ export default function NavBar() {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <Image
-            src={"/assets/logo.svg"}
+            src="/assets/logo.svg"
             width={30}
             height={20}
             alt="logo image"
           />
           <Link
-            href={"/"}
+            href="/"
             className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white"
           >
             Blog App
@@ -36,21 +44,14 @@ export default function NavBar() {
 
         <div className="flex items-center space-x-4">
           {session && (
-            <div>
-              <Link href="/write">
-                <p className="text-gray-700 font-semibold dark:text-gray-300 hover:text-blue-600 transition">
-                  Write Blog
-                </p>
-              </Link>
-            </div>
+            <Link href="/write">
+              <p className="text-gray-700 font-semibold dark:text-gray-300 hover:text-blue-600 transition">
+                Write Blog
+              </p>
+            </Link>
           )}
-          {/* <button
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
-            onClick={() => setIsSearchOpen(true)}
-          >
-            <FaSearch size={20} />
-          </button> */}
 
+          {/* Search Button */}
           <div className="relative group flex items-center">
             <button
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
@@ -63,31 +64,43 @@ export default function NavBar() {
             </span>
           </div>
 
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-          >
-            {theme === "dark" ? (
-              <MdLightMode size={24} />
-            ) : (
-              <MdDarkMode size={24} />
-            )}
-          </button>
+          {/* Theme Toggle with ShadCN UI */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
+          {/* User Profile or Login */}
           {session ? (
-            <Link href={"/auth/profile"}>
-            <Image
-              src={session.user?.image || '/assets/picture-profile.png'}
-              alt="User Avatar"
-              width={38}
-              height={38}
-              className="rounded-full hover:ring-2 hover:ring-blue-600 transition"
-            />
-          </Link>
+            <Link href="/auth/profile">
+              <Image
+                src={session.user?.image || "/assets/picture-profile.png"}
+                alt="User Avatar"
+                width={38}
+                height={38}
+                className="rounded-full hover:ring-2 hover:ring-blue-600 transition"
+              />
+            </Link>
           ) : (
             <Link
-              href={"/auth/login"}
-              className=" text-white font-[600] px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 hover:text-white transition"
+              href="/auth/login"
+              className="text-white font-semibold px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 transition"
             >
               Login
             </Link>
@@ -95,6 +108,7 @@ export default function NavBar() {
         </div>
       </div>
 
+      {/* Search Box Modal */}
       {isSearchOpen && (
         <SearchBox
           isOpen={isSearchOpen}

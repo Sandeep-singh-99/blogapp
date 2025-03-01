@@ -6,7 +6,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 async function getBlogData(id: string) {
-  try {
+  try { 
     const response = await fetch(`${baseUrl}/api/blogs/${id}`);
     if (!response.ok) return null;
     return response.json();

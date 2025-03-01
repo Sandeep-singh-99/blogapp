@@ -1,10 +1,11 @@
-import AdminNavbar from "./components/AdminNavBar";
+import NavBarWrapper from "./components/NavBarWrapper";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     return (
-      <section className="admin-theme">
-        <AdminNavbar/>
+      <section>
+        <NavBarWrapper>
         {children}
+        </NavBarWrapper>
       </section>
     );
   }

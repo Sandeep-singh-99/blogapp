@@ -5,12 +5,12 @@ import { ConnectDB } from "../../../../lib/db";
 import BlogModel from "../../../../models/blog";
 import { getAuthOptions } from "../../../../lib/auth";
 
-
-
-
 // Slug generation function
 const generateSlug = (title: string) => {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 };
 
 export async function POST(req: NextRequest) {
@@ -31,35 +31,32 @@ export async function POST(req: NextRequest) {
     const thumbnailImage = formData.get("thumbnailImage") as string;
 
     if (!title || !category || !tags || !markdown || !thumbnailImage) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
-    
     await BlogModel.create({
       title,
       category,
-      tags: tags.split(",").map(tag => tag.trim()), 
+      tags: tags.split(",").map((tag) => tag.trim()),
       markdown,
-      content: markdown, 
+      content: markdown,
       slug: generateSlug(title),
       author: session.user.id,
       ...(contentImage ? { contentImage } : {}),
       thumbnailImage,
     });
 
-    return NextResponse.json({ success: true, message: "Blog created successfully!" });
-
+    return NextResponse.json({
+      success: true,
+      message: "Blog created successfully!",
+    });
   } catch (error) {
-    console.error("❌ Blog creation error:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An unknown error occurred" },
-      { status: 500 }
-    );
+    return NextResponse.json({error: error instanceof Error ? error.message :'An unknown error occurred'}, {status: 500});
   }
 }
-
-
-
 
 export async function GET() {
   try {
@@ -70,15 +67,17 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const blogs = await BlogModel.find({author: session.user.id}).sort({ createdAt: -1 });
+    const blogs = await BlogModel.find({ author: session.user.id }).sort({
+      createdAt: -1,
+    });
 
     return NextResponse.json({ blogs }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
     return NextResponse.json(
-      { error: "An unknown error occurred" },
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 }
     );
   }

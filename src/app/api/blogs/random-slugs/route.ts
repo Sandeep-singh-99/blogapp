@@ -1,17 +1,24 @@
-import {  NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
-
 
 export async function GET() {
   try {
     await ConnectDB();
 
-    const blogs = await BlogModel.aggregate([{ $sample: { size: 5 } }]); 
+    const blogs = await BlogModel.aggregate([{ $sample: { size: 5 } }]);
 
-    return NextResponse.json({ slugs: blogs.map((b) => ({ slug: b.slug })) }, { status: 200 });
+    return NextResponse.json(
+      { slugs: blogs.map((b) => ({ slug: b.slug })) },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error fetching random slugs:", error);
-    return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 }
+    );
   }
 }

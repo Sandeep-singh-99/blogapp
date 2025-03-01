@@ -3,8 +3,6 @@ import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
 import mongoose from "mongoose";
 
-
-
 interface BlogUpdateFields {
   title?: string;
   slug?: string;
@@ -17,7 +15,10 @@ interface BlogUpdateFields {
 }
 
 // GET handler with explicit typing
-export async function GET(req: NextRequest,  { params }: { params: Promise<{ id: string }>}) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await ConnectDB();
     const resolvedParams = await params;
@@ -39,16 +40,21 @@ export async function GET(req: NextRequest,  { params }: { params: Promise<{ id:
 
     return NextResponse.json(blog, { status: 200 });
   } catch (error) {
-    console.error("Error fetching blog:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 }
     );
   }
 }
 
 // DELETE handler with explicit typing
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await ConnectDB();
     const resolvedParams = await params;
@@ -61,9 +67,11 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting blog:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 }
     );
   }
@@ -77,7 +85,10 @@ const UpdateSlug = (title: string): string => {
 };
 
 // PUT handler with explicit typing
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await ConnectDB();
     const resolvedParams = await params;
@@ -124,9 +135,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating blog:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 }
     );
   }

@@ -21,7 +21,7 @@ import { showError, showSuccess } from "@/utils/toast";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-// Define the Blog interface
+
 interface Blog {
   _id: string;
   category: string;
@@ -30,9 +30,9 @@ interface Blog {
 
 const rowsPerPage = 3;
 
-// SWR Fetcher Function with Caching
+
 const fetcher = async (url: string) => {
-  const res = await fetch(url, { cache: "force-cache" }); // Use caching in fetch
+  const res = await fetch(url, { cache: "force-cache" });
   if (!res.ok) throw new Error("Failed to fetch data");
   return res.json();
 };
@@ -41,15 +41,15 @@ export default function ProfileAllBlog() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data: session } = useSession();
 
-  // Use SWR with caching and revalidation settings
+
   const { data, error } = useSWR("/api/blogs", fetcher, {
-    dedupingInterval: 60000, // Cache data for 60 seconds before re-fetching
-    revalidateOnFocus: false, // Prevent refetching when window regains focus
-    shouldRetryOnError: true, // Retry fetching if it fails
-    fallbackData: { blogs: [] }, // Provide default empty data
+    dedupingInterval: 60000, 
+    revalidateOnFocus: false, 
+    shouldRetryOnError: true, 
+    fallbackData: { blogs: [] }, 
   });
 
-  // Handle error state
+  
   if (error) {
     showError({ message: "Failed to fetch blogs" });
     return <p className="text-red-500">Error loading blogs...</p>;

@@ -3,7 +3,9 @@ import ProfileAllBlog from "@/components/ProfileAllBlog";
 import ProfileInfo from "@/components/ProfileInfo";
 import React from "react";
 
-export default function Profile() {
+
+export default async function Profile() {
+ 
   return (
     <div className="px-6 md:px-12 py-5 md:py-10">
       <div>

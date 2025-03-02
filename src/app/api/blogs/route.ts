@@ -5,6 +5,8 @@ import { ConnectDB, getMongoClient } from "../../../../lib/db";
 import BlogModel from "../../../../models/blog";
 import { getAuthOptions } from "../../../../lib/auth";
 import { ObjectId } from "mongodb";
+
+
 // Slug generation function
 const generateSlug = (title: string) => {
   return title

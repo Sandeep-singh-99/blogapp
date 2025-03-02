@@ -14,7 +14,6 @@ interface BlogUpdateFields {
   thumbnailImage?: string;
 }
 
-// GET handler with explicit typing
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -23,22 +22,77 @@ export async function GET(
     await ConnectDB();
     const resolvedParams = await params;
     const id = resolvedParams.id;
-
     let blog = null;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      blog = await BlogModel.findById(id);
+      blog = await BlogModel.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(id) } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "author",
+            foreignField: "_id",
+            as: "authorDetails",
+          },
+        },
+        { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            title: 1,
+            category: 1,
+            slug: 1,
+            tags: 1,
+            contentImage: 1,
+            thumbnailImage: 1,
+            content: 1,
+            markdown: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            "authorDetails._id": 1,
+            "authorDetails.name": 1,
+            "authorDetails.image": 1, 
+          },
+        },
+      ]);
     }
 
-    if (!blog) {
-      blog = await BlogModel.findOne({ slug: id });
+    if (!blog || blog.length === 0) {
+      blog = await BlogModel.aggregate([
+        { $match: { slug: id } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "author",
+            foreignField: "_id",
+            as: "authorDetails",
+          },
+        },
+        { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            title: 1,
+            category: 1,
+            slug: 1,
+            tags: 1,
+            contentImage: 1,
+            thumbnailImage: 1,
+            content: 1,
+            markdown: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            "authorDetails._id": 1,
+            "authorDetails.name": 1,
+            "authorDetails.image": 1, 
+          },
+        },
+      ]);
     }
 
-    if (!blog) {
+    if (!blog || blog.length === 0) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
-    return NextResponse.json(blog, { status: 200 });
+    return NextResponse.json(blog[0], { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {
@@ -50,7 +104,8 @@ export async function GET(
   }
 }
 
-// DELETE handler with explicit typing
+
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -84,7 +139,7 @@ const UpdateSlug = (title: string): string => {
     .replace(/^-+|-+$/g, "");
 };
 
-// PUT handler with explicit typing
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -1,50 +1,27 @@
-import Image from "next/image";
 import React from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 
-export default function BlogCard() {
+export default function BlogCard({ blog }) {
   return (
-    <div>
-      <div className="bg-white max-w-[400px] dark:bg-[#212121] rounded-lg shadow-lg pb-5">
-        <Image
-          src="/assets/back.png"
-          alt="blog1"
-          width={400}
-          height={300}
-          quality={100}
-          className="rounded-t-lg"
-        />
-        <div className="flex flex-col space-y-5 px-5">
-          <div className="flex flex-row space-x-3 items-center mt-5">
-            <Image
-              src={"/assets/picture-profile.png"}
-              alt="profile"
-              width={32}
-              height={32}
-              quality={100}
-            />
+    <div
+      className="relative max-w-[400px] h-[320px] bg-cover bg-center rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl"
+      style={{ backgroundImage: `url(${blog.thumbnailImage})` }}
+    >
+      {/* Gradient Overlay for Readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
-            <h1 className="text=[14sm] text-[#212121] dark:text-white font-[500]">
-              Sandeep Singh
-            </h1>
-            <p className="text=[14sm] text-[#9A9A9A] font-[500]">2 days ago</p>
-          </div>
+      {/* Content */}
+      <div className="absolute bottom-0 p-5 text-white w-full flex flex-col gap-3">
+        {/* Blog Title */}
+        <p className="line-clamp-3 text-lg font-semibold">{blog.title}</p>
 
-          <p className="line-clamp-3 text-[14px] text-[#212121] dark:text-white ">
-            In today’s hyperconnected world, the lines between work, leisure,
-            and rest have blurred significantly. Notifications, endless streams
-            of content, and the need to always stay connected often create a
-            digital noise that impacts mental well-being, focus, and
-            productivity. This is where the concept of digital declutter comes
-            into play.
-          </p>
-
-          <div className="">
-            <button className="flex items-center text-center bg-[#F4F4F4] dark:text-black font-serif px-5 py-2">
-              Read More <MdKeyboardArrowRight size={24} />{" "}
-            </button>
-          </div>
-        </div>
+        {/* Read More Button */}
+        <button
+          className="flex items-center gap-2 bg-white/20 hover:bg-white/40 text-white font-medium px-5 py-2 rounded-lg backdrop-blur-md transition-all duration-300"
+          onClick={() => (window.location.href = `/blog/${blog.slug}`)} 
+        >
+          Read More <MdKeyboardArrowRight size={20} />
+        </button>
       </div>
     </div>
   );

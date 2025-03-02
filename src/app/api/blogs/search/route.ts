@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
         { title: { $regex: query, $options: "i" } },
         { slug: { $regex: query, $options: "i" } },
       ],
-    }).limit(10);
+    }).lean().limit(10);
 
     console.log("Matching Blogs:", blogs);
 

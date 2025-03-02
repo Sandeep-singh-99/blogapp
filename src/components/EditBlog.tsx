@@ -187,9 +187,9 @@ export default function EditBlog({
       </div>
 
       {/* Markdown Editor */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4 h-[500px]">
         {/* Markdown Editor */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg overflow-y-auto">
           <MdEditor
             style={{ width: "100%", height: "500px" }}
             onImageUpload={handleMarkdownImageUpload}
@@ -201,8 +201,8 @@ export default function EditBlog({
         </div>
 
         {/* Live Preview */}
-        <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg">
-          <h2 className="text-xl font-bold mb-2">👀 Live Preview</h2>
+        <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg overflow-y-auto">
+          <h2 className="text-xl font-bold mb-2  top-0 bg-gray-100 dark:bg-gray-900 z-10">👀 Live Preview</h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <MarkdownRenderer markdown={contentMarkdown} />
           </div>

@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await ConnectDB();
 
-    const blogs = await BlogModel.aggregate([{ $sample: { size: 5 } }]);
+    const blogs = await BlogModel.aggregate([{ $sample: { size: 5 } }]).exec();
 
     return NextResponse.json(
       { slugs: blogs.map((b) => ({ slug: b.slug })) },
@@ -22,3 +22,6 @@ export async function GET() {
     );
   }
 }
+
+
+

@@ -21,18 +21,17 @@ import { showError, showSuccess } from "@/utils/toast";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-
 interface Blog {
   _id: string;
   category: string;
   title: string;
+  authorDetails: { name: string } | string;
 }
 
 const rowsPerPage = 3;
 
-
 const fetcher = async (url: string) => {
-  const res = await fetch(url, { cache: "force-cache" });
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch data");
   return res.json();
 };
@@ -41,15 +40,14 @@ export default function ProfileAllBlog() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data: session } = useSession();
 
-
   const { data, error } = useSWR("/api/blogs", fetcher, {
-    dedupingInterval: 60000, 
-    revalidateOnFocus: false, 
-    shouldRetryOnError: true, 
-    fallbackData: { blogs: [] }, 
+    dedupingInterval: 60000,
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+    shouldRetryOnError: true,
+    fallbackData: { blogs: [] },
   });
 
-  
   if (error) {
     showError({ message: "Failed to fetch blogs" });
     return <p className="text-red-500">Error loading blogs...</p>;
@@ -71,9 +69,15 @@ export default function ProfileAllBlog() {
       const response = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
 
       if (response.ok) {
-        mutate("/api/blogs", async (cachedData) => {
-          return { blogs: cachedData.blogs.filter((blog: Blog) => blog._id !== id) };
-        }, false); // Update cache instantly without refetching
+        mutate(
+          "/api/blogs",
+          async (cachedData) => {
+            return {
+              blogs: cachedData.blogs.filter((blog: Blog) => blog._id !== id),
+            };
+          },
+          false
+        ); 
         showSuccess({ message: "Blog deleted successfully" });
       } else {
         showError({ message: "Failed to delete blog" });
@@ -102,7 +106,10 @@ export default function ProfileAllBlog() {
           {currentData.map((blog) => (
             <TableRow key={blog._id}>
               <TableCell className="font-semibold">
-                {session ? session.user?.name : "Unknown"}
+                {typeof blog.authorDetails === "object" &&
+                blog.authorDetails !== null
+                  ? blog.authorDetails.name
+                  : "Unknown"}
               </TableCell>
               <TableCell>{blog.category}</TableCell>
               <TableCell>{blog.title}</TableCell>

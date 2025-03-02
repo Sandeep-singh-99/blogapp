@@ -67,12 +67,12 @@ export default function AllBlog() {
                 />
                 <div>
                   <h3 className="text-xl font-semibold">{blog.title}</h3>
-                  <p className="text-gray-500 line-clamp-2">{blog.description}</p>
+                  <p className="text-gray-500 line-clamp-2">{blog.category}</p>
                 </div>
               </div>
-              <button className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+              {/* <button className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
                 View
-              </button>
+              </button> */}
             </Card>
           ))
         ) : (

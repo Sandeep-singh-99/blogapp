@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-// Fetcher function
+
 const fetcher = async (url: string) => {
   const response = await fetch(url);
   if (!response.ok) showError({ message: "Failed to fetch users" });
@@ -64,7 +64,6 @@ export default function AllUser() {
                     <div className="flex flex-col">
                       <h3 className="text-xl font-semibold">{user.name}</h3>
                       <p className="text-gray-600">{user.email}</p>
-                      <p className="text-sm text-gray-500">Blogs Published: 5</p>
                     </div>
                   </div>
                   <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">

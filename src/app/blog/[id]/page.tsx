@@ -6,7 +6,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 async function getBlogData(id: string) {
-  try { 
+  try {
     const response = await fetch(`${baseUrl}/api/blogs/${id}`);
     if (!response.ok) return null;
     return response.json();
@@ -34,11 +34,21 @@ export default async function BlogView({ params }: BlogViewProps) {
   return (
     <article className="container mx-auto px-6 py-12 max-w-3xl">
       {/* Header Section */}
-      <header className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+      <header className="mb-8">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
           {blogData.title}
         </h1>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-4 gap-4 text-sm">
+        <div className="flex items-center gap-3 mt-4">
+          <Image
+            src={blogData.authorDetails.image}
+            alt={blogData.authorDetails.name}
+            width={40}
+            height={40}
+            className="object-cover w-10 h-10 rounded-full"
+          />
+          <h1 className="text-lg font-medium">{blogData.authorDetails.name}</h1>
+        </div>
+        <div className="flex flex-wrap items-center justify-between mt-4 gap-3 text-sm text-gray-600 dark:text-gray-300">
           <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-md">
             <svg
               className="w-4 h-4 mr-2"
@@ -56,25 +66,25 @@ export default async function BlogView({ params }: BlogViewProps) {
             </svg>
             {blogData.category}
           </span>
-          <span className="text-gray-500 dark:text-gray-400">
+          <time>
             {new Date(blogData.createdAt).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
               day: "numeric",
             })}
-          </span>
+          </time>
         </div>
       </header>
 
       {/* Thumbnail Image */}
       {blogData.thumbnailImage && (
-        <div className="relative mb-10 rounded-xl overflow-hidden shadow-xl">
+        <div className="relative mb-10 rounded-xl overflow-hidden shadow-lg">
           <Image
             src={blogData.thumbnailImage}
             alt={blogData.title}
             width={800}
             height={400}
-            className="object-cover w-full h-64 md:h-80 transition-transform duration-500 hover:scale-110"
+            className="object-cover w-full h-64 md:h-80 transition-transform duration-300 hover:scale-105"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChgB3fKILGQAAAABJRU5ErkJggg=="
           />
@@ -82,34 +92,30 @@ export default async function BlogView({ params }: BlogViewProps) {
       )}
 
       {/* Blog Content */}
-      <section className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg prose prose-modern dark:prose-invert max-w-none">
+      <section className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-md prose prose-lg dark:prose-invert max-w-none">
         <MarkdownRenderer markdown={blogData.markdown} />
       </section>
 
       {/* Footer Metadata */}
-      <footer className="mt-10 text-sm text-gray-500 dark:text-gray-400 flex justify-between items-center">
+      <footer className="mt-10 text-sm text-gray-600 dark:text-gray-400 flex flex-wrap justify-between items-center gap-3">
         <p>
           Last updated:{" "}
-          {new Date(blogData.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
+          <time>
+            {new Date(blogData.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </time>
         </p>
-        <div className="flex gap-4">
-          <a
-            href="#"
-            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-          >
+        {/* <div className="flex gap-4">
+          <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all">
             Share
-          </a>
-          <a
-            href="#"
-            className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-          >
+          </button>
+          <button className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition-all">
             Comment
-          </a>
-        </div>
+          </button>
+        </div> */}
       </footer>
     </article>
   );

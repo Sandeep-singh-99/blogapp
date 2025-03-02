@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const accounts = await db.collection("accounts").find().toArray();
 
     // Extract all userIds from accounts
-    const userIds = accounts.map((account: any) => new ObjectId(account.userId)); // Convert to ObjectId
+    const userIds = accounts.map((account: any) => new ObjectId(account.userId)); 
 
     // Fetch all users whose _id matches any userId in accounts
     const allUsers = await db.collection("users").find({ _id: { $in: userIds } }).toArray();

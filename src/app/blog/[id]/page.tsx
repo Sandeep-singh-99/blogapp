@@ -3,6 +3,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import CommentSection from "@/components/CommentSection";
+import BookMarkBtn from "@/components/BookMarkBtn";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -39,7 +40,8 @@ export default async function BlogView({ params }: BlogViewProps) {
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
           {blogData.title}
         </h1>
-        <div className="flex items-center gap-3 mt-4">
+        <div className="flex justify-between items-center gap-3 mt-4">
+          <div className="flex items-center gap-2">
           <Image
             src={blogData.authorDetails.image}
             alt={blogData.authorDetails.name}
@@ -48,6 +50,10 @@ export default async function BlogView({ params }: BlogViewProps) {
             className="object-cover w-10 h-10 rounded-full"
           />
           <h1 className="text-lg font-medium">{blogData.authorDetails.name}</h1>
+          </div>
+          <div>
+            <BookMarkBtn/>
+          </div>
         </div>
         <div className="flex flex-wrap items-center justify-between mt-4 gap-3 text-sm text-gray-600 dark:text-gray-300">
           <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-md">

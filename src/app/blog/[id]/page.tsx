@@ -33,7 +33,7 @@ export default async function BlogView({ params }: BlogViewProps) {
   if (!blogData) return notFound();
 
   return (
-    <article className="container mx-auto px-6 py-12 max-w-5xl">
+    <article className="container mx-auto px-6 py-12 max-w-4xl">
       {/* Header Section */}
       <header className="mb-8">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">

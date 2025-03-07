@@ -4,7 +4,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 export default function BlogCard({ blog }) {
   return (
     <div
-      className="relative max-w-[400px] h-[320px] bg-cover bg-center rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl"
+      className="relative max-w-[400px] h-[320px] bg-contain bg-center rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl"
       style={{ backgroundImage: `url(${blog.thumbnailImage})` }}
     >
       {/* Gradient Overlay for Readability */}

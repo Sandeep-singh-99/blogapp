@@ -1,6 +1,7 @@
 "use client";
 import { showError, showSuccess } from "@/utils/toast";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import React, { FormEvent, useState } from "react";
 import useSWR, { mutate } from "swr";
 
@@ -37,6 +38,7 @@ function CommentSection({ BlogId }: CommentSectionProps) {
 
   const loading = !data && !error;
   const comments = data?.comments;
+  
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -173,9 +175,11 @@ function CommentSection({ BlogId }: CommentSectionProps) {
                 className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-800 transition duration-200"
               >
                 <div className="flex items-start space-x-4">
-                  <img
+                  <Image
                     className="w-12 h-12 rounded-full object-cover"
-                    src={comment.author.image}
+                    src={comment.author.image || FALLBACK_IMAGE}
+                    width={48}
+                    height={48}
                     alt={comment.author.name || "User"}
                     onError={(e) => {
                       console.log(`Image failed to load: ${comment.author.image}`);

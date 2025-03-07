@@ -9,6 +9,7 @@ import { ConnectDB } from "../../../../../lib/db";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string }}) {
   try {
+    await ConnectDB()
     const session = await getServerSession(getAuthOptions)
 
     if (!session?.user?.id) {
@@ -53,8 +54,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
 export async function GET(req: NextRequest, { params }: { params: { id: string }}) {
   try {
-    const { id } = await params
     await ConnectDB()
+    const { id } = await params
 
     const isObjectId = mongoose.Types.ObjectId.isValid(id);
     let blogId: mongoose.Types.ObjectId;

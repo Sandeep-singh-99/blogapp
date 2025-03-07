@@ -52,7 +52,7 @@ export default async function BlogView({ params }: BlogViewProps) {
           <h1 className="text-lg font-medium">{blogData.authorDetails.name}</h1>
           </div>
           <div>
-            <BookMarkBtn/>
+          <BookMarkBtn id={id} />
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between mt-4 gap-3 text-sm text-gray-600 dark:text-gray-300">

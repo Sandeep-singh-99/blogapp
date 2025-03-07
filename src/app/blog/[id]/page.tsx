@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import CommentSection from "@/components/CommentSection";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -32,7 +33,7 @@ export default async function BlogView({ params }: BlogViewProps) {
   if (!blogData) return notFound();
 
   return (
-    <article className="container mx-auto px-6 py-12 max-w-3xl">
+    <article className="container mx-auto px-6 py-12 max-w-5xl">
       {/* Header Section */}
       <header className="mb-8">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
@@ -108,15 +109,15 @@ export default async function BlogView({ params }: BlogViewProps) {
             })}
           </time>
         </p>
-        {/* <div className="flex gap-4">
+        <div className="flex gap-4">
           <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all">
             Share
           </button>
-          <button className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition-all">
-            Comment
-          </button>
-        </div> */}
+        </div>
       </footer>
+      <div className="mt-10">
+        <CommentSection BlogId={id}/>
+      </div>
     </article>
   );
 }

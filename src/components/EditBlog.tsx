@@ -93,7 +93,7 @@ export default function EditBlog({
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", category);
-    formData.append("tags", tags); // tags is now guaranteed to be a string
+    formData.append("tags", tags); 
     formData.append("markdown", contentMarkdown);
     formData.append("content", contentMarkdown);
     formData.append("thumbnailImage", thumbnailUrl);
@@ -154,13 +154,37 @@ export default function EditBlog({
           onChange={(e) => setTitle(e.target.value)}
           className="border p-3 rounded-lg bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
         />
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border p-3 rounded-lg bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-        />
+
+        <div className="relative">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none text-gray-900 shadow-sm hover:border-blue-500 transition-all cursor-pointer"
+          >
+            <option value="" disabled hidden>
+              Select a Category
+            </option>
+            <option value="Technology and Coding">Technology and Coding</option>
+            <option value="Travel and Lifestyle">Travel and Lifestyle</option>
+            <option value="Health and Fitness">Health and Fitness</option>
+            <option value="Food and Recipes">Food and Recipes</option>
+            <option value="Education and Learning">
+              Education and Learning
+            </option>
+            <option value="Business and Finance">Business and Finance</option>
+            <option value="Personal Development">Personal Development</option>
+            <option value="Creative Arts">Creative Arts</option>
+            <option value="Fashion and Beauty">Fashion and Beauty</option>
+            <option value="Entertainment and Pop Culture">
+              Entertainment and Pop Culture
+            </option>
+          </select>
+          {/* Custom Arrow Icon */}
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
+            ▼
+          </span>
+        </div>
+
         <input
           type="text"
           placeholder="Tags (comma-separated)"
@@ -171,18 +195,35 @@ export default function EditBlog({
       </div>
 
       {/* Thumbnail Upload */}
-      <div className="flex gap-4">
-        <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
-          🖼 Upload Thumbnail
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleThumbnailUpload}
-          />
-        </label>
-        {thumbnailImage && (
-          <p className="text-green-600">✅ Thumbnail selected</p>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-4 items-center">
+          <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-600 transition">
+            🖼 Upload Thumbnail
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleThumbnailUpload}
+            />
+          </label>
+          {(thumbnailImage || initialData?.thumbnailImage) && (
+            <p className="text-green-500">✅ Thumbnail selected</p>
+          )}
+        </div>
+
+        {/* Thumbnail Preview */}
+        {(thumbnailImage || initialData?.thumbnailImage) && (
+          <div className="relative w-48 h-48 border rounded-lg overflow-hidden shadow-md">
+            <img
+              src={
+                thumbnailImage
+                  ? URL.createObjectURL(thumbnailImage)
+                  : initialData?.thumbnailImage || ""
+              }
+              alt="Thumbnail Preview"
+              className="w-full h-full object-cover"
+            />
+          </div>
         )}
       </div>
 
@@ -202,7 +243,9 @@ export default function EditBlog({
 
         {/* Live Preview */}
         <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg overflow-y-auto">
-          <h2 className="text-xl font-bold mb-2  top-0 bg-gray-100 dark:bg-gray-900 z-10">👀 Live Preview</h2>
+          <h2 className="text-xl font-bold mb-2  top-0 bg-gray-100 dark:bg-gray-900 z-10">
+            👀 Live Preview
+          </h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <MarkdownRenderer markdown={contentMarkdown} />
           </div>

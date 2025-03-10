@@ -3,6 +3,7 @@ import { ConnectDB } from "../../../../../lib/db";
 import BlogModel from "../../../../../models/blog";
 import mongoose from "mongoose";
 
+
 interface BlogUpdateFields {
   title?: string;
   slug?: string;

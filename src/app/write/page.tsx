@@ -7,6 +7,7 @@ import { showError, showSuccess } from "@/utils/toast";
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { X } from "lucide-react";
 
 const mdParser = new MarkdownIt({
   highlight: function (code, lang) {
@@ -137,13 +138,37 @@ export default function Write() {
           onChange={(e) => setTitle(e.target.value)}
           className="border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
         />
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-        />
+
+        <div className="relative">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full border p-3 rounded-lg bg-transparent dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none text-gray-900 shadow-sm hover:border-blue-500 transition-all cursor-pointer"
+          >
+            <option value="" disabled hidden>
+              Select a Category
+            </option>
+            <option value="Technology and Coding">Technology and Coding</option>
+            <option value="Travel and Lifestyle">Travel and Lifestyle</option>
+            <option value="Health and Fitness">Health and Fitness</option>
+            <option value="Food and Recipes">Food and Recipes</option>
+            <option value="Education and Learning">
+              Education and Learning
+            </option>
+            <option value="Business and Finance">Business and Finance</option>
+            <option value="Personal Development">Personal Development</option>
+            <option value="Creative Arts">Creative Arts</option>
+            <option value="Fashion and Beauty">Fashion and Beauty</option>
+            <option value="Entertainment and Pop Culture">
+              Entertainment and Pop Culture
+            </option>
+          </select>
+          {/* Custom Arrow Icon */}
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
+            ▼
+          </span>
+        </div>
+
         <input
           type="text"
           placeholder="Tags (comma-separated)"
@@ -154,18 +179,39 @@ export default function Write() {
       </div>
 
       {/* Thumbnail Upload */}
-      <div className="flex gap-4 items-center">
-        <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-600 transition">
-          🖼 Upload Thumbnail
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleThumbnailUpload}
-          />
-        </label>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-4 items-center">
+          <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-600 transition">
+            🖼 Upload Thumbnail
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleThumbnailUpload}
+            />
+          </label>
+          {thumbnailImage && (
+            <p className="text-green-500">✅ Thumbnail selected</p>
+          )}
+        </div>
+
+        {/* Thumbnail Preview */}
         {thumbnailImage && (
-          <p className="text-green-500">✅ Thumbnail selected</p>
+          <div className="relative w-48 h-48 border rounded-lg overflow-hidden shadow-md">
+            <img
+              src={URL.createObjectURL(thumbnailImage)}
+              alt="Thumbnail Preview"
+              className="w-full h-full object-cover"
+            />
+            {/* Optional: Remove Button */}
+            <button
+              onClick={() => setThumbnailImage(null)}
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
+              title="Remove Thumbnail"
+            >
+              <X size={16} />
+            </button>
+          </div>
         )}
       </div>
 

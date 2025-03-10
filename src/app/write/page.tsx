@@ -27,8 +27,10 @@ export default function Write() {
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState("");
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
+  const [thumbnailUrlInput, setThumbnailUrlInput] = useState("");
   const [contentMarkdown, setContentMarkdown] = useState<string>("");
   const [contentImages, setContentImages] = useState<File[]>([]);
+  const [showThumbnailOptions, setShowThumbnailOptions] = useState(false); 
 
   async function onImageUpload(file: File, folder: string): Promise<string> {
     const formData = new FormData();
@@ -65,6 +67,8 @@ export default function Write() {
   function handleThumbnailUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files?.[0]) {
       setThumbnailImage(event.target.files[0]);
+      setThumbnailUrlInput(""); 
+      setShowThumbnailOptions(false); 
     }
   }
 
@@ -73,14 +77,16 @@ export default function Write() {
     if (!category) return showError({ message: "Category is required!" });
     if (!tags) return showError({ message: "Tags are required!" });
     if (!contentMarkdown) return showError({ message: "Content is required!" });
-    if (!thumbnailImage)
-      return showError({ message: "Thumbnail is required!" });
+    if (!thumbnailImage && !thumbnailUrlInput)
+      return showError({ message: "Thumbnail (file or URL) is required!" });
 
     let thumbnailUrl = "";
     let contentImageUrl = "";
 
     if (thumbnailImage) {
       thumbnailUrl = await onImageUpload(thumbnailImage, "thumbnails");
+    } else if (thumbnailUrlInput) {
+      thumbnailUrl = thumbnailUrlInput;
     }
 
     if (contentImages.length > 0) {
@@ -112,6 +118,7 @@ export default function Write() {
         setCategory("");
         setTags("");
         setThumbnailImage(null);
+        setThumbnailUrlInput("");
         setContentMarkdown("");
         setContentImages([]);
         showSuccess({ message: "Blog published successfully!" });
@@ -163,7 +170,6 @@ export default function Write() {
               Entertainment and Pop Culture
             </option>
           </select>
-          {/* Custom Arrow Icon */}
           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
             ▼
           </span>
@@ -178,34 +184,74 @@ export default function Write() {
         />
       </div>
 
-      {/* Thumbnail Upload */}
+      {/* Thumbnail Upload or URL */}
       <div className="flex flex-col gap-4">
-        <div className="flex gap-4 items-center">
-          <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-600 transition">
+        <div className="relative">
+          <button
+            onClick={() => setShowThumbnailOptions(!showThumbnailOptions)}
+            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition"
+          >
             🖼 Upload Thumbnail
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleThumbnailUpload}
-            />
-          </label>
-          {thumbnailImage && (
-            <p className="text-green-500">✅ Thumbnail selected</p>
+          </button>
+
+          {/* Thumbnail Options Menu */}
+          {showThumbnailOptions && (
+            <div className="absolute z-10 mt-2 w-64 bg-white dark:bg-gray-700 border rounded-lg shadow-lg">
+              <div className="p-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-100 mb-1">
+                  Upload Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full text-sm text-gray-900 dark:text-gray-100"
+                  onChange={handleThumbnailUpload}
+                />
+              </div>
+              <div className="p-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-100 mb-1">
+                  Add URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Thumbnail URL"
+                  value={thumbnailUrlInput}
+                  onChange={(e) => {
+                    setThumbnailUrlInput(e.target.value);
+                    setThumbnailImage(null); 
+                    setShowThumbnailOptions(false); 
+                  }}
+                  className="w-full border p-2 rounded-lg bg-transparent dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {(thumbnailImage || thumbnailUrlInput) && (
+            <p className="mt-2 text-green-500">✅ Thumbnail selected</p>
           )}
         </div>
 
         {/* Thumbnail Preview */}
-        {thumbnailImage && (
+        {(thumbnailImage || thumbnailUrlInput) && (
           <div className="relative w-48 h-48 border rounded-lg overflow-hidden shadow-md">
             <img
-              src={URL.createObjectURL(thumbnailImage)}
+              src={
+                thumbnailImage
+                  ? URL.createObjectURL(thumbnailImage)
+                  : thumbnailUrlInput
+              }
               alt="Thumbnail Preview"
               className="w-full h-full object-cover"
+              onError={(e) =>
+                (e.currentTarget.src = "https://via.placeholder.com/150")
+              }
             />
-            {/* Optional: Remove Button */}
             <button
-              onClick={() => setThumbnailImage(null)}
+              onClick={() => {
+                setThumbnailImage(null);
+                setThumbnailUrlInput("");
+              }}
               className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
               title="Remove Thumbnail"
             >
@@ -217,10 +263,9 @@ export default function Write() {
 
       {/* Markdown Editor & Preview */}
       <div className="flex flex-col md:flex-row gap-4 h-[500px]">
-        {/* Markdown Editor */}
         <div className="w-full md:w-1/2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg overflow-y-auto">
           <MdEditor
-            style={{ width: "100%", height: "100%" }} // Changed to 100% to fill container
+            style={{ width: "100%", height: "100%" }}
             onImageUpload={handleMarkdownImageUpload}
             value={contentMarkdown}
             onChange={({ text }) => setContentMarkdown(text)}
@@ -229,9 +274,8 @@ export default function Write() {
           />
         </div>
 
-        {/* Live Preview */}
         <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg overflow-y-auto">
-          <h2 className="text-xl font-bold mb-2  top-0 bg-gray-100 dark:bg-gray-900 z-10">
+          <h2 className="text-xl font-bold mb-2 top-0 bg-gray-100 dark:bg-gray-900 z-10">
             👀 Live Preview
           </h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">

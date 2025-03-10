@@ -5,6 +5,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { showError, showSuccess } from "@/utils/toast";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { X } from "lucide-react";
 
 interface BlogData {
   _id?: string;
@@ -31,10 +32,12 @@ export default function EditBlog({
       : initialData?.tags || ""
   );
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
+  const [thumbnailUrlInput, setThumbnailUrlInput] = useState("");
   const [contentMarkdown, setContentMarkdown] = useState(
     initialData?.markdown || ""
   );
   const [contentImages, setContentImages] = useState<File[]>([]);
+  const [showThumbnailOptions, setShowThumbnailOptions] = useState(false);
 
   async function onImageUpload(file: File, folder: string): Promise<string> {
     const formData = new FormData();
@@ -60,21 +63,20 @@ export default function EditBlog({
     }
   }
 
-  // Handle Markdown Image Upload
   async function handleMarkdownImageUpload(file: File) {
     const url = await onImageUpload(file, "blogs");
     if (url) setContentImages((prev) => [...prev, file]);
     return url;
   }
 
-  // Handle thumbnail upload
   function handleThumbnailUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files?.[0]) {
       setThumbnailImage(event.target.files[0]);
+      setThumbnailUrlInput("");
+      setShowThumbnailOptions(false);
     }
   }
 
-  // Handle form submission
   const handleSubmit = async () => {
     if (!title || !category || !tags || !contentMarkdown) {
       return alert("Please fill in all fields!");
@@ -83,9 +85,13 @@ export default function EditBlog({
     let thumbnailUrl = initialData?.thumbnailImage || "";
     let contentImageUrl = "";
 
+    // Prioritize new file upload or URL over initialData
     if (thumbnailImage) {
       thumbnailUrl = await onImageUpload(thumbnailImage, "thumbnails");
+    } else if (thumbnailUrlInput) {
+      thumbnailUrl = thumbnailUrlInput;
     }
+
     if (contentImages.length > 0) {
       contentImageUrl = await onImageUpload(contentImages[0], "blogs");
     }
@@ -93,7 +99,7 @@ export default function EditBlog({
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", category);
-    formData.append("tags", tags); 
+    formData.append("tags", tags);
     formData.append("markdown", contentMarkdown);
     formData.append("content", contentMarkdown);
     formData.append("thumbnailImage", thumbnailUrl);
@@ -107,7 +113,6 @@ export default function EditBlog({
           body: formData,
         });
       } else {
-        // Create new blog
         response = await fetch("/api/blogs", {
           method: "POST",
           body: formData,
@@ -127,6 +132,7 @@ export default function EditBlog({
           setCategory("");
           setTags("");
           setThumbnailImage(null);
+          setThumbnailUrlInput("");
           setContentMarkdown("");
           setContentImages([]);
         }
@@ -179,7 +185,6 @@ export default function EditBlog({
               Entertainment and Pop Culture
             </option>
           </select>
-          {/* Custom Arrow Icon */}
           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
             ▼
           </span>
@@ -194,42 +199,91 @@ export default function EditBlog({
         />
       </div>
 
-      {/* Thumbnail Upload */}
+      {/* Thumbnail Upload or URL */}
       <div className="flex flex-col gap-4">
-        <div className="flex gap-4 items-center">
-          <label className="bg-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-600 transition">
+        <div className="relative">
+          <button
+            onClick={() => setShowThumbnailOptions(!showThumbnailOptions)}
+            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition"
+          >
             🖼 Upload Thumbnail
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleThumbnailUpload}
-            />
-          </label>
-          {(thumbnailImage || initialData?.thumbnailImage) && (
-            <p className="text-green-500">✅ Thumbnail selected</p>
+          </button>
+
+          {/* Thumbnail Options Menu */}
+          {showThumbnailOptions && (
+            <div className="absolute z-10 mt-2 w-64 bg-white dark:bg-gray-700 border rounded-lg shadow-lg">
+              <div className="p-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-100 mb-1">
+                  Upload Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full text-sm text-gray-900 dark:text-gray-100"
+                  onChange={handleThumbnailUpload}
+                />
+              </div>
+              <div className="p-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-100 mb-1">
+                  Add URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Thumbnail URL"
+                  value={thumbnailUrlInput}
+                  onChange={(e) => {
+                    setThumbnailUrlInput(e.target.value);
+                    setThumbnailImage(null);
+                    setShowThumbnailOptions(false);
+                  }}
+                  className="w-full border p-2 rounded-lg bg-transparent dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {(thumbnailImage ||
+            thumbnailUrlInput ||
+            initialData?.thumbnailImage) && (
+            <p className="mt-2 text-green-500">✅ Thumbnail selected</p>
           )}
         </div>
 
         {/* Thumbnail Preview */}
-        {(thumbnailImage || initialData?.thumbnailImage) && (
+        {(thumbnailImage ||
+          thumbnailUrlInput ||
+          initialData?.thumbnailImage) && (
           <div className="relative w-48 h-48 border rounded-lg overflow-hidden shadow-md">
             <img
               src={
                 thumbnailImage
                   ? URL.createObjectURL(thumbnailImage)
-                  : initialData?.thumbnailImage || ""
+                  : thumbnailUrlInput || initialData?.thumbnailImage || ""
               }
               alt="Thumbnail Preview"
               className="w-full h-full object-cover"
+              onError={(e) =>
+                (e.currentTarget.src = "https://via.placeholder.com/150")
+              }
             />
+            {(thumbnailImage || thumbnailUrlInput) && (
+              <button
+                onClick={() => {
+                  setThumbnailImage(null);
+                  setThumbnailUrlInput("");
+                }}
+                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
+                title="Remove Thumbnail"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* Markdown Editor */}
       <div className="flex flex-col md:flex-row gap-4 h-[500px]">
-        {/* Markdown Editor */}
         <div className="w-full md:w-1/2 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-lg overflow-y-auto">
           <MdEditor
             style={{ width: "100%", height: "500px" }}
@@ -241,9 +295,8 @@ export default function EditBlog({
           />
         </div>
 
-        {/* Live Preview */}
         <div className="w-full md:w-1/2 p-4 border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-lg overflow-y-auto">
-          <h2 className="text-xl font-bold mb-2  top-0 bg-gray-100 dark:bg-gray-900 z-10">
+          <h2 className="text-xl font-bold mb-2 top-0 bg-gray-100 dark:bg-gray-900 z-10">
             👀 Live Preview
           </h2>
           <div className="prose prose-lg dark:prose-invert max-w-none">

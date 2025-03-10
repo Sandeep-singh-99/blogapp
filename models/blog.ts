@@ -40,14 +40,12 @@ const blogSchema = new Schema<IBlog>(
     tags: [{ type: String }],
     contentImage: {
       type: String,
-      required: false
     },
     cloudinaryId: {
       type: String,
     },
     thumbnailImage: {
       type: String,
-      required: true,
     },
     content: {
       type: String,

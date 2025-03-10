@@ -42,17 +42,19 @@ export default async function BlogView({ params }: BlogViewProps) {
         </h1>
         <div className="flex justify-between items-center gap-3 mt-4">
           <div className="flex items-center gap-2">
-          <Image
-            src={blogData.authorDetails.image}
-            alt={blogData.authorDetails.name}
-            width={40}
-            height={40}
-            className="object-cover w-10 h-10 rounded-full"
-          />
-          <h1 className="text-lg font-medium">{blogData.authorDetails.name}</h1>
+            <Image
+              src={blogData.authorDetails.image}
+              alt={blogData.authorDetails.name}
+              width={40}
+              height={40}
+              className="object-cover w-10 h-10 rounded-full"
+            />
+            <h1 className="text-lg font-medium">
+              {blogData.authorDetails.name}
+            </h1>
           </div>
           <div>
-          <BookMarkBtn id={id} />
+            <BookMarkBtn id={id} />
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between mt-4 gap-3 text-sm text-gray-600 dark:text-gray-300">
@@ -84,14 +86,16 @@ export default async function BlogView({ params }: BlogViewProps) {
       </header>
 
       {/* Thumbnail Image */}
+
       {blogData.thumbnailImage && (
-        <div className="relative mb-10 rounded-xl overflow-hidden shadow-lg">
+        <div className="relative mb-10 rounded-xl overflow-hidden shadow-lg max-w-[800px] mx-auto aspect-[2/1]">
           <Image
             src={blogData.thumbnailImage}
-            alt={blogData.title}
-            width={800}
-            height={400}
-            className="object-cover w-full h-64 md:h-80 transition-transform duration-300 hover:scale-105"
+            alt={blogData.title || "Blog Thumbnail"}
+            layout="fill" // Fill the container
+            unoptimized
+            quality={100}
+            className="transition-transform duration-300 hover:scale-105"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChgB3fKILGQAAAABJRU5ErkJggg=="
           />
@@ -122,7 +126,7 @@ export default async function BlogView({ params }: BlogViewProps) {
         </div>
       </footer>
       <div className="mt-10">
-        <CommentSection BlogId={id}/>
+        <CommentSection BlogId={id} />
       </div>
     </article>
   );

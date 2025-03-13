@@ -2,8 +2,17 @@
 import BlogCard from "@/components/BlogCard";
 import Hero from "@/components/Hero";
 import { Skeleton } from "@/components/ui/skeleton";
-import React from "react";
+import React, { useState } from "react";
 import useSWR from "swr";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -13,7 +22,17 @@ const fetcher = async (url: string) => {
   return response.json();
 };
 
+const rowsPerPage = 6;
+
+interface Blog {
+  _id: string;
+  category: string;
+  title: string;
+  authorDetails: { name: string } | string;
+}
+
 export default function BlogHome() {
+  const [currentPage, setCurrentPage] = useState(1);
   const { data, error, isLoading } = useSWR(
     `${baseUrl}/api/blogs/all-blogs`,
     fetcher,
@@ -35,6 +54,16 @@ export default function BlogHome() {
       </div>
     );
 
+  if (!data) return <p className="text-gray-500">Loading...</p>;
+
+  const blogData: Blog[] = data.allBlogs || [];
+  const totalPages = Math.ceil(blogData.length / rowsPerPage);
+
+  const currentData = blogData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   return (
     <>
       <Hero />
@@ -46,75 +75,50 @@ export default function BlogHome() {
 
         <div className="mt-10 flex justify-center lg:flex-row space-x-6">
           {/* Blog Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-2/3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-11/12">
             {isLoading
               ? Array.from({ length: 6 }).map((_, index) => (
                   <BlogSkeleton key={index} />
                 )) // Show Skeletons
-              : data.allBlogs.map((blog: any) => (
+              : currentData.map((blog) => (
                   <BlogCard key={blog._id} blog={blog} />
                 ))}
           </div>
-
-          {/* Sidebar with Author Info and Additional Content */}
-          <div className="w-1/3 hidden lg:block">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              {/* Author Info */}
-              <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-                Sandeep Singh
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                Author & Tech Enthusiast
-              </p>
-
-              {/* Latest Post */}
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                  Latest Post
-                </h3>
-                <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                  <p>
-                    <span className="font-medium">Post Title:</span> "Exploring
-                    the Future of Web Development"
-                  </p>
-                  <p className="mt-2">
-                    <span className="font-medium">Published on:</span> March 10,
-                    2025
-                  </p>
-                </div>
-              </div>
-
-              {/* Top Editor Section */}
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                  Top Editor
-                </h3>
-                <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                  <p>
-                    <span className="font-medium">Editor:</span> John Doe
-                  </p>
-                  <p className="mt-2">
-                    <span className="font-medium">Position:</span> Senior Editor
-                  </p>
-                </div>
-              </div>
-
-              {/* Category Section */}
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                  Categories
-                </h3>
-                <ul className="mt-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
-                  <li>Web Development</li>
-                  <li>Mobile Development</li>
-                  <li>Emerging Technologies</li>
-                  <li>Tech Trends</li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+      <Pagination className="mt-4">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className={currentPage === 1 ? "cursor-not-allowed" : ""}
+            />
+          </PaginationItem>
+
+          {[...Array(totalPages)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                href="#"
+                isActive={currentPage === index + 1}
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              className={currentPage === totalPages ? "cursor-not-allowed" : ""}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </>
   );
 }

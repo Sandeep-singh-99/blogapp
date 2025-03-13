@@ -55,7 +55,7 @@ export default async function BlogView({ params }: BlogViewProps) {
         <meta name="twitter:creator" content={`@${author}`} />
       </Head>
 
-      <article className="container mx-auto px-6 py-12 max-w-4xl">
+      <article className="container mx-auto px-6 py-12 max-w-5xl">
         {/* Header Section */}
         <header className="mb-8">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
@@ -124,7 +124,7 @@ export default async function BlogView({ params }: BlogViewProps) {
         )}
 
         {/* Blog Content */}
-        <section className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-md prose prose-lg dark:prose-invert max-w-none">
+        <section className="dark:bg-gray-800  p-6 md:p-8 rounded-xl shadow-md prose prose-lg dark:prose-invert max-w-none">
           <MarkdownRenderer markdown={blogData.markdown} />
         </section>
 

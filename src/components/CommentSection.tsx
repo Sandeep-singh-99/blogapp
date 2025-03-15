@@ -80,7 +80,7 @@ function CommentSection({ BlogId }: CommentSectionProps) {
             Discussion Thread
           </h2>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            12 comments
+          {comments?.length || 0} comments
           </span>
         </div>
 

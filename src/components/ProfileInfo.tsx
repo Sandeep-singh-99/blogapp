@@ -23,37 +23,42 @@ function ProfileInfo() {
       });
     }
   };
+
   return (
-    <div>
+    <div className="p-4">
       {session ? (
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-4">
             <Image
               src={session.user?.image || "/assets/picture-profile.png"}
-              alt="User Avater"
-              width={62}
-              height={62}
+              alt="User Avatar"
+              width={48}
+              height={48}
               quality={100}
-              className="rounded-full"
+              className="rounded-full w-12 h-12 sm:w-[62px] sm:h-[62px]"
             />
-            <div>
-              <h2 className="text-white text-2xl font-[500] font-serif">
+            <div className="overflow-hidden">
+              <h2 className="text-white text-xl sm:text-2xl font-[500] font-serif truncate">
                 {session.user?.name}
               </h2>
-              <p className="text-white font-[400]">{session.user?.email}</p>
+              <p className="text-white font-[400] text-sm sm:text-base truncate">
+                {session.user?.email}
+              </p>
             </div>
           </div>
-          <div>
+          <div className="flex justify-center sm:justify-end">
             <button
               onClick={() => handleLogout()}
-              className="bg-blue-500 hover:bg-blue-700 p-2 rounded-lg text-white"
+              className="bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded-lg text-white text-sm sm:text-base w-full sm:w-auto"
             >
               Logout
             </button>
           </div>
         </div>
       ) : (
-        <p>Please login to view your profile</p>
+        <p className="text-white text-center">
+          Please login to view your profile
+        </p>
       )}
     </div>
   );

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { Moon, Sun } from "lucide-react";
+import { Moon, NotebookPen, Sun } from "lucide-react";
 import SearchBox from "./SearchBox";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -36,16 +36,17 @@ export default function NavBar() {
           />
           <Link
             href="/"
-            className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white"
+            className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white"
           >
             Blog App
           </Link>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 lg:space-x-4">
           {session && (
-            <Link href="/write">
-              <p className="text-gray-700 font-semibold dark:text-gray-300 hover:text-blue-600 transition">
+            <Link href="/write" className="flex items-center space-x-2">
+              <NotebookPen/>
+              <p className="text-gray-700 hidden lg:inline font-semibold dark:text-gray-300 hover:text-blue-600 transition">
                 Write Blog
               </p>
             </Link>

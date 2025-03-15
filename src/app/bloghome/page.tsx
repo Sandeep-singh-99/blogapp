@@ -92,7 +92,7 @@ export default function BlogHome() {
             <PaginationPrevious
               href="#"
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className={currentPage === 1 ? "cursor-not-allowed" : ""}
+              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
 
@@ -114,7 +114,7 @@ export default function BlogHome() {
               onClick={() =>
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
-              className={currentPage === totalPages ? "cursor-not-allowed" : ""}
+              className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
         </PaginationContent>

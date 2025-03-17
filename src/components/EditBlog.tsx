@@ -170,17 +170,26 @@ export default function EditBlog({
             <option value="" disabled hidden>
               Select a Category
             </option>
-            <option value="Technology and Coding">Web Development</option>
-            <option value="Travel and Lifestyle">Mobile App Development</option>
-            <option value="Health and Fitness">Software Development</option>
-            <option value="Food and Recipes">Cybersecurity and Privacy</option>
-            <option value="Education and Learning">
-            Artificial Intelligence and Machine Learning
+            <option value="Web Development">Web Development</option>
+            <option value="Mobile App Development">
+              Mobile App Development
             </option>
-            <option value="Business and Finance">Data Science and Analytics</option>
-            <option value="Personal Development">Cybersecurity and Privacy</option>
-            <option value="Creative Arts">Internet of Things (IoT)</option>
-            <option value="Fashion and Beauty">Augmented Reality and Virtual Reality
+            <option value="Software Development">Software Development</option>
+            <option value="Cybersecurity and Privacy">
+              Cybersecurity and Privacy
+            </option>
+            <option value="Artificial Intelligence and Machine Learning">
+              Artificial Intelligence and Machine Learning
+            </option>
+            <option value="Data Science and Analytics">
+              Data Science and Analytics
+            </option>
+            <option value="Personal Development">Personal Development</option>
+            <option value="Internet of Things (IoT)">
+              Internet of Things (IoT)
+            </option>
+            <option value="Augmented Reality and Virtual Reality">
+              Augmented Reality and Virtual Reality
             </option>
           </select>
           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">

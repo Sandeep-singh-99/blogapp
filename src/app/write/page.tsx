@@ -155,19 +155,17 @@ export default function Write() {
             <option value="" disabled hidden>
               Select a Category
             </option>
-            <option value="Technology and Coding">Technology and Coding</option>
-            <option value="Travel and Lifestyle">Travel and Lifestyle</option>
-            <option value="Health and Fitness">Health and Fitness</option>
-            <option value="Food and Recipes">Food and Recipes</option>
+            <option value="Technology and Coding">Web Development</option>
+            <option value="Travel and Lifestyle">Mobile App Development</option>
+            <option value="Health and Fitness">Software Development</option>
+            <option value="Food and Recipes">Cybersecurity and Privacy</option>
             <option value="Education and Learning">
-              Education and Learning
+            Artificial Intelligence and Machine Learning
             </option>
-            <option value="Business and Finance">Business and Finance</option>
-            <option value="Personal Development">Personal Development</option>
-            <option value="Creative Arts">Creative Arts</option>
-            <option value="Fashion and Beauty">Fashion and Beauty</option>
-            <option value="Entertainment and Pop Culture">
-              Entertainment and Pop Culture
+            <option value="Business and Finance">Data Science and Analytics</option>
+            <option value="Personal Development">Cybersecurity and Privacy</option>
+            <option value="Creative Arts">Internet of Things (IoT)</option>
+            <option value="Fashion and Beauty">Augmented Reality and Virtual Reality
             </option>
           </select>
           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">

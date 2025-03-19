@@ -45,16 +45,34 @@ export default function BlogHome() {
     }
   );
 
-  if (error)
+   
+   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-red-500 text-lg font-semibold">
-          Failed to load blogs. Please try again later.
+      <div className="flex flex-col justify-center items-center min-h-screen space-y-4">
+        <p className="text-red-600 text-xl font-medium">
+          Oops! Something went wrong while loading the blogs.
         </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        >
+          Retry
+        </button>
       </div>
     );
+  }
 
-  if (!data) return <p className="text-gray-500">Loading...</p>;
+  
+  if (!data) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="flex flex-col items-center space-y-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading blogs...</p>
+        </div>
+      </div>
+    );
+  }
 
   const blogData: Blog[] = data.allBlogs || [];
   const totalPages = Math.ceil(blogData.length / rowsPerPage);

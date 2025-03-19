@@ -32,10 +32,10 @@ export default function BookMarkSection() {
   }
   
 
-  const bookmark: IBookmarkProps[] = data?.bookmarks || [];
-  const totalPages = Math.ceil(bookmark.length / rowsPerPage);
+  const bookmarks: IBookmarkProps[] = data?.bookmarks || [];
+  const totalPages = Math.ceil(bookmarks.length / rowsPerPage);
 
-  const currentData = bookmark.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+  const currentData = bookmarks.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
   return (
     <div className='w-full max-w-6xl mx-auto shadow-lg p-6 rounded-lg border'>
         <Table>
@@ -71,7 +71,7 @@ export default function BookMarkSection() {
                 </PaginationItem>
                 {
                     [...Array(totalPages)].map((_, index) => (
-                        <PaginationItem>
+                        <PaginationItem key={index}>
                             <PaginationLink
                             href='#'
                             isActive={currentPage === index + 1}

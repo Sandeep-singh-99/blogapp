@@ -37,12 +37,19 @@ export async function POST(
       blogId = blog._id;
     }
 
+
+     const blog = await BlogModel.findById(blogId);
+     if (blog?.author.toString() === session.user.id) {
+       return NextResponse.json({ error: "You can't like your own blog" }, { status: 400 });
+     }
+
     const existingLike = await LikeModel.findOne({ userId: session.user.id, blogId });
 
     if (existingLike) {
         await LikeModel.findByIdAndDelete(existingLike._id);
         return NextResponse.json({ error: "Unliked successfully" }, { status: 200 });
     }
+
     
     const newLike = await LikeModel.create({ userId: session.user.id, blogId })
 

@@ -23,13 +23,7 @@ const fetcher = async (url: string) => {
 
 export default function BookMarkSection() {
     const [currentPage, setCurrentPage] = useState(1);
-  const { data, error } = useSWR("/api/bookmark", fetcher, {
-    refreshInterval: 3000,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: true,
-    shouldRetryOnError: true,
-    fallbackData: { bookmarks: [] },
-  })
+  const { data, error } = useSWR("/api/bookmark", fetcher)
 
   console.log("data", data.bookmarks);
 

@@ -12,11 +12,7 @@ interface BookMarkBtnProps {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function BookMarkBtn({ id }: BookMarkBtnProps) {
-  const { data, error } = useSWR(`/api/bookmark/${id}`, fetcher, {
-    refreshInterval: 3000,
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-  });
+  const { data, error } = useSWR(`/api/bookmark/${id}`, fetcher);
   const [loading, setLoading] = useState(false);
   const isBookmarked = data?.isBookmarked || false;
 

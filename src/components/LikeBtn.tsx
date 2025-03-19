@@ -1,8 +1,7 @@
-// LikeBtn.tsx (Frontend)
 "use client";
-import { showError, showSuccess } from "@/utils/toast";
-import React, { useCallback, useState } from "react";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { showError } from "@/utils/toast";
+import React, { useCallback } from "react";
+import { AiFillLike } from "react-icons/ai";
 import useSWR, { mutate } from "swr";
 
 interface LikeBtnProps {
@@ -22,12 +21,6 @@ export default function LikeBtn({ id }: LikeBtnProps) {
   const { data, isLoading } = useSWR(
     `/api/likes/total-likes/${id}`,
     fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 2000,
-      refreshInterval: 3000,
-      revalidateOnReconnect: true,
-    }
   );
 
   const totalLikes = data?.totalLikes ?? 0;
@@ -73,7 +66,6 @@ export default function LikeBtn({ id }: LikeBtnProps) {
     </button>
   );
 }
-
 
 
 

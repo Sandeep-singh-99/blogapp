@@ -9,7 +9,7 @@ interface BookMarkBtnProps {
   id: string;
 }
 
-const fetcher = (url: string) => fetch(url, {cache: "no-cache"}).then((res) => res.json());
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function BookMarkBtn({ id }: BookMarkBtnProps) {
   const { data, error } = useSWR(`/api/bookmark/${id}`, fetcher, {

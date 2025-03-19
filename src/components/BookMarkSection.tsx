@@ -25,17 +25,17 @@ export default function BookMarkSection() {
     const [currentPage, setCurrentPage] = useState(1);
   const { data, error } = useSWR("/api/bookmark", fetcher)
 
-  console.log("data", data.bookmarks);
+//   console.log("data", data.bookmarks);
 
   if (error) {
     return <p className="text-red-500">Error loading bookmarks...</p>;
   }
   
 
-  const bookmarks: IBookmarkProps[] = data?.bookmarks || [];
-  const totalPages = Math.ceil(bookmarks.length / rowsPerPage);
+  const bookmark: IBookmarkProps[] = data?.bookmarks || [];
+  const totalPages = Math.ceil(bookmark.length / rowsPerPage);
 
-  const currentData = bookmarks.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+  const currentData = bookmark.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
   return (
     <div className='w-full max-w-6xl mx-auto shadow-lg p-6 rounded-lg border'>
         <Table>

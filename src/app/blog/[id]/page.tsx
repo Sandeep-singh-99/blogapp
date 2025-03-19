@@ -8,6 +8,7 @@ import Head from "next/head";
 import { Share } from "lucide-react";
 import LikeBtn from "@/components/LikeBtn";
 
+
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 async function getBlogData(id: string) {
@@ -84,6 +85,7 @@ export default async function BlogView({ params }: BlogViewProps) {
                 })}
               </time>
             </div>
+           
           </div>
 
           <div className="flex justify-between items-center mt-4 border rounded-md py-4 px-4">
@@ -119,7 +121,7 @@ export default async function BlogView({ params }: BlogViewProps) {
         </section>
 
         {/* Footer Metadata */}
-        <footer className="mt-10 text-sm text-gray-600 dark:text-gray-400 flex flex-wrap justify-between items-center gap-3">
+        <footer className="mt-10 text-sm text-gray-600 dark:text-gray-400 flex flex-wrap justify-start items-center gap-3">
           <p>
             Last updated:{" "}
             <time>
@@ -130,11 +132,6 @@ export default async function BlogView({ params }: BlogViewProps) {
               })}
             </time>
           </p>
-          <div className="flex gap-4">
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all">
-              Share
-            </button>
-          </div>
         </footer>
         <div className="mt-10">
           <CommentSection BlogId={id} />

@@ -51,10 +51,8 @@ export async function POST(
     });
 
     if (existingBookmark) {
-      return NextResponse.json(
-        { error: "You have already bookmarked this post" },
-        { status: 400 }
-      );
+      await BookMarkModel.findByIdAndDelete(existingBookmark._id);
+      return NextResponse.json({ message: "Bookmark removed successfully" });
     }
 
     const newBookmark = await BookMarkModel.create({

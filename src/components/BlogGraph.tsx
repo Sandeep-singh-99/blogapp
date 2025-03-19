@@ -58,7 +58,7 @@ export default function BlogGraph() {
   }
 
   if (!data || data.labels.length === 0) {
-    return <p>Loading graph...</p>;
+    return <p className="flex justify-center items-center">No Blog</p>;
   }
 
   const chartData: BarChartData = {

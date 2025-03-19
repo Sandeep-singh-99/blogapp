@@ -89,10 +89,27 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Bookmark ID is required" }, { status: 400 });
     }
 
-    let blogId: mongoose.Types.ObjectId | null = null;
+    // let blogId: mongoose.Types.ObjectId | null = null;
 
    
-    if (mongoose.Types.ObjectId.isValid(id)) {
+    // if (mongoose.Types.ObjectId.isValid(id)) {
+    //   blogId = new mongoose.Types.ObjectId(id);
+    // } else {
+    //   const blog = await BlogModel.findOne({ slug: id });
+    //   if (!blog) {
+    //     return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    //   }
+    //   blogId = blog._id;
+    // }
+
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    let blogId: mongoose.Types.ObjectId;
+
+    if (isObjectId) {
+      const blog = await BlogModel.findById(id);
+      if (!blog) {
+        return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      }
       blogId = new mongoose.Types.ObjectId(id);
     } else {
       const blog = await BlogModel.findOne({ slug: id });

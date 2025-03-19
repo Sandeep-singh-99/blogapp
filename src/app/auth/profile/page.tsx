@@ -1,4 +1,5 @@
 import BlogGraph from "@/components/BlogGraph";
+import BookMarkSection from "@/components/BookMarkSection";
 import ProfileAllBlog from "@/components/ProfileAllBlog";
 import ProfileInfo from "@/components/ProfileInfo";
 import React from "react";
@@ -30,6 +31,15 @@ export default async function Profile() {
         <div className="bg-gray-300 dark:bg-gray-700 w-full h-0.5 my-4 sm:my-6" />
         <div className="mb-6 sm:mb-8">
           <ProfileAllBlog />
+        </div>
+
+        {/* BookMark Section */}
+        <h2 className="text-xl sm:text-2xl font-semibold font-serif text-gray-900 dark:text-white mb-2">
+          All Bookmarks
+        </h2>
+        <div className="bg-gray-300 dark:bg-gray-700 w-full h-0.5 my-4 sm:my-6" />
+        <div className="mb-6 sm:mb-8">
+          <BookMarkSection/>
         </div>
 
         {/* Graphs Section */}

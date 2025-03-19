@@ -10,7 +10,9 @@ interface LikeBtnProps {
 }
 
 const fetcher = async (url: string) => {
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    cache: "no-store",
+  });
   if (!res.ok) {
     throw new Error(`Failed to fetch: ${res.statusText}`);
   }
@@ -25,6 +27,8 @@ export default function LikeBtn({ id }: LikeBtnProps) {
     {
       revalidateOnFocus: false,
       dedupingInterval: 2000,
+      refreshInterval: 3000,
+      revalidateOnReconnect: true,
     }
   );
 

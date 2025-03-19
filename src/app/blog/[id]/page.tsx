@@ -5,6 +5,8 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import CommentSection from "@/components/CommentSection";
 import BookMarkBtn from "@/components/BookMarkBtn";
 import Head from "next/head";
+import { Share } from "lucide-react";
+import LikeBtn from "@/components/LikeBtn";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -61,48 +63,36 @@ export default async function BlogView({ params }: BlogViewProps) {
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
             {blogData.title}
           </h1>
-          <div className="flex justify-between items-center gap-3 mt-4">
-            <div className="flex items-center gap-2">
-              <Image
-                src={blogData.authorDetails.image}
-                alt={blogData.authorDetails.name}
-                width={40}
-                height={40}
-                className="object-cover w-10 h-10 rounded-full"
-              />
-              <h1 className="text-lg font-medium">
+
+          <div className="flex items-center gap-3 mt-4">
+            <Image
+              src={blogData.authorDetails.image}
+              alt={blogData.authorDetails.name}
+              width={40}
+              height={40}
+              className="object-cover w-10 h-10 rounded-full"
+            />
+            <div>
+              <h1 className="text-xl font-semibold">
                 {blogData.authorDetails.name}
               </h1>
-            </div>
-            <div>
-              <BookMarkBtn id={id} />
+              <time className="text-sm text-gray-600 dark:text-gray-300">
+                {new Date(blogData.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
             </div>
           </div>
-          <div className="flex flex-wrap items-center justify-between mt-4 gap-3 text-sm text-gray-600 dark:text-gray-300">
-            <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-md">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                />
-              </svg>
-              {blogData.category}
-            </span>
-            <time>
-              {new Date(blogData.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </time>
+
+          <div className="flex justify-between items-center mt-4 border rounded-md py-4 px-4">
+            <LikeBtn id={id} />
+
+            <div className="flex justify-center items-center gap-5">
+              <BookMarkBtn id={id} />
+              <Share />
+            </div>
           </div>
         </header>
 

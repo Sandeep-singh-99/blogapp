@@ -51,24 +51,14 @@ export default function BookMarkBtn({ id }: BookMarkBtnProps) {
   return (
     <button
       onClick={toggleBookmark}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all duration-300
-        ${
-          isBookmarked
-            ? "border-yellow-500 bg-yellow-100 text-yellow-700"
-            : "border-blue-500 bg-blue-100 text-blue-700"
-        }
-        hover:shadow-md active:scale-95 disabled:opacity-50`}
       disabled={loading}
       title={isBookmarked ? "Bookmark" : "Unbookmark"}
     >
       {isBookmarked ? (
-        <FaBookmark className="text-yellow-500" />
+        <FaBookmark size={24} className="text-yellow-500" />
       ) : (
-        <FaRegBookmark className="text-blue-500" />
+        <FaRegBookmark size={24}/>
       )}
-      <span className="font-medium">
-        {isBookmarked ? "Bookmarked" : "Bookmark"}
-      </span>
     </button>
   );
 }

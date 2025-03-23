@@ -1,11 +1,14 @@
 "use client";
+
 import { showSuccess } from "@/utils/toast";
 import Image from "next/image";
-import React from "react";
+import React, { useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import remarkGfm from "remark-gfm";
+import remarkGfm from "remark-gfm"; 
+import remarkBreaks from "remark-breaks"; 
+
 
 interface CodeBlockProps {
   inline?: boolean;
@@ -13,125 +16,202 @@ interface CodeBlockProps {
   children?: React.ReactNode;
 }
 
-const CodeBlock: React.FC<CodeBlockProps> = ({ inline, className, children }) => {
-  const match = /language-(\w+)/.exec(className || "");
-  const code = String(children ?? "").trim();
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      showSuccess({ message: "Copied to clipboard!" });
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
-
-  return !inline && match ? (
-    <div className="relative my-6">
-      <button
-        onClick={copyToClipboard}
-        className="absolute top-2 right-2 bg-gray-700 text-white px-2 py-1 rounded text-xs hover:bg-gray-600"
-      >
-        Copy
-      </button>
-      <SyntaxHighlighter style={dracula} language={match[1]} PreTag="div">
-        {code}
-      </SyntaxHighlighter>
-    </div>
-  ) : (
-    <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded text-sm">
-      {children ?? ""}
-    </code>
-  );
-};
-
-interface MarkdownRendererProps {
-  markdown: string;
-}
-
 interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
   alt?: string;
 }
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ markdown }) => {
+interface MarkdownRendererProps {
+  markdown: string;
+  className?: string;
+}
+
+
+const CodeBlock: React.FC<CodeBlockProps> = ({
+  inline,
+  className,
+  children,
+}) => {
+  const match = /language-(\w+)/.exec(className || "");
+  const code = String(children ?? "").trim();
+
+  const copyToClipboard = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      showSuccess({ message: "Copied to clipboard!" });
+    } catch (err) {
+      console.error("Failed to copy code to clipboard:", err);
+    }
+  }, [code]);
+
+  if (inline) {
+    return (
+      <code
+        className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm text-gray-800 dark:text-gray-200 font-mono"
+        aria-label="Inline code"
+      >
+        {children ?? ""}
+      </code>
+    );
+  }
+
+  if (!match) {
+    return <code className={className}>{children ?? ""}</code>;
+  }
+
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        h1: ({ ...props }) => (
-          <h1
-            className="text-4xl font-bold text-gray-900 dark:text-white mt-8 mb-4 border-l-4 border-blue-500 pl-4"
-            {...props}
-          />
-        ),
-        h2: ({ ...props }) => (
-          <h2
-            className="text-3xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3 border-b-2 border-gray-200 dark:border-gray-700 pb-1"
-            {...props}
-          />
-        ),
-        h3: ({ ...props }) => (
-          <h3
-            className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-3"
-            {...props}
-          />
-        ),
-        p: ({ ...props }) => (
-          <p
-            className="text-gray-700 dark:text-gray-300 leading-relaxed my-5 text-lg"
-            {...props}
-          />
-        ),
-        img: ({ src, alt, width, height, ...props }: ImageProps) => {
-          const imageWidth = typeof width === "string" ? parseInt(width, 10) : width || 800;
-          const imageHeight = typeof height === "string" ? parseInt(height, 10) : height || 500;
-          return (
-            <Image
-              loader={({ src }) => src}
-              src={src || ""}
-              alt={alt || "Markdown image"}
-              width={imageWidth}
-              height={imageHeight}
-              className="rounded-xl max-w-full h-auto my-6 shadow-md"
+    <div className="relative my-4 group">
+      <button
+        onClick={copyToClipboard}
+        className="absolute top-2 right-2 bg-gray-700 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        aria-label="Copy code to clipboard"
+      >
+        Copy
+      </button>
+      <SyntaxHighlighter
+        style={dracula}
+        language={match[1]}
+        PreTag="pre"
+        className="rounded-lg !mt-0 !mb-0 !p-4"
+        customStyle={{ margin: 0 }}
+        aria-label={`Code block in ${match[1]} language`}
+      >
+        {code}
+      </SyntaxHighlighter>
+    </div>
+  );
+};
+
+
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
+  markdown,
+  className,
+}) => {
+  return (
+    <article
+      className={`prose dark:prose-invert max-w-none ${className || ""}`}
+    >
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkBreaks]} 
+        components={{
+          h1: ({ ...props }) => (
+            <h1
+              className="text-3xl font-bold text-gray-900 dark:text-white mt-6 mb-4 pt-4 border-b border-gray-200 dark:border-gray-700 pb-2"
               {...props}
             />
-          );
-        },
-        a: ({ ...props }) => (
-          <a
-            className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium underline underline-offset-4 transition-colors duration-200"
-            {...props}
-          />
-        ),
-        ul: ({ ...props }) => (
-          <ul
-            className="list-disc list-outside pl-6 my-5 text-gray-700 dark:text-gray-300"
-            {...props}
-          />
-        ),
-        ol: ({ ...props }) => ( // Removed `ordered` and `node` since they’re unused
-          <ol
-            className="list-decimal list-outside pl-6 my-5 text-gray-700 dark:text-gray-300"
-            {...props}
-          />
-        ),
-        li: ({ ...props }) => <li className="my-2" {...props} />,
-        code: CodeBlock,
-        blockquote: ({ ...props }) => (
-          <blockquote
-            className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-600 dark:text-gray-400 my-6"
-            {...props}
-          />
-        ),
-        u: ({ ...props }) => <span className="underline" {...props} />,
-        hr: ({ ...props }) => (
-          <hr className="my-6 border-t border-gray-300 dark:border-gray-600" {...props} />
-        ),
-      }}
-    >
-      {markdown}
-    </ReactMarkdown>
+          ),
+          h2: ({ ...props }) => (
+            <h2
+              className="text-2xl font-bold text-gray-900 dark:text-white mt-6 mb-3 pt-4 border-b border-gray-200 dark:border-gray-700 pb-1"
+              {...props}
+            />
+          ),
+          h3: ({ ...props }) => (
+            <h3
+              className="text-xl font-bold text-gray-900 dark:text-white mt-5 mb-2 pt-3"
+              {...props}
+            />
+          ),
+          h4: ({ ...props }) => (
+            <h4
+              className="text-lg font-bold text-gray-900 dark:text-white mt-4 mb-2 pt-2"
+              {...props}
+            />
+          ),
+          p: ({ ...props }) => (
+            <p
+              className="text-gray-700 dark:text-gray-300 leading-7 my-4"
+              {...props}
+            />
+          ),
+          img: ({ src, alt, width, height, ...props }: ImageProps) => {
+            const imageWidth = Number(width) || 800;
+            const imageHeight = Number(height) || "auto";
+
+            return (
+              <figure className="my-6">
+                <Image
+                  loader={({ src }) => src}
+                  src={src || ""}
+                  alt={alt || "Image from markdown content"}
+                  width={imageWidth}
+                  height={imageHeight === "auto" ? undefined : imageHeight}
+                  className="rounded-lg max-w-full h-auto"
+                  loading="lazy"
+                  {...props}
+                />
+                {alt && (
+                  <figcaption className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">
+                    {alt}
+                  </figcaption>
+                )}
+              </figure>
+            );
+          },
+          a: ({ ...props }) => (
+            <a
+              className="text-blue-600 dark:text-blue-400 hover:underline visited:text-purple-600 dark:visited:text-purple-400"
+              target="_blank"
+              rel="noopener noreferrer"
+              {...props}
+            />
+          ),
+          ul: ({ ...props }) => (
+            <ul
+              className="list-disc list-outside pl-6 my-4 text-gray-700 dark:text-gray-300 space-y-2"
+              {...props}
+            />
+          ),
+          ol: ({ ...props }) => (
+            <ol
+              className="list-decimal list-outside pl-6 my-4 text-gray-700 dark:text-gray-300 space-y-2"
+              {...props}
+            />
+          ),
+          li: ({ ...props }) => <li className="my-1 pl-1" {...props} />,
+          code: CodeBlock,
+          blockquote: ({ ...props }) => (
+            <blockquote
+              className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50"
+              {...props}
+            />
+          ),
+          em: ({ ...props }) => <em className="italic" {...props} />,
+          strong: ({ ...props }) => <strong className="font-bold" {...props} />,
+          hr: ({ ...props }) => (
+            <hr
+              className="my-8 border-t border-gray-300 dark:border-gray-600"
+              {...props}
+            />
+          ),
+          table: ({ ...props }) => (
+            <table
+              className="my-4 w-full border-collapse border border-gray-300 dark:border-gray-600"
+              {...props}
+            />
+          ),
+          thead: ({ ...props }) => (
+            <thead className="bg-gray-100 dark:bg-gray-800" {...props} />
+          ),
+          th: ({ ...props }) => (
+            <th
+              className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold"
+              {...props}
+            />
+          ),
+          td: ({ ...props }) => (
+            <td
+              className="border border-gray-300 dark:border-gray-600 px-4 py-2"
+              {...props}
+            />
+          ),
+          // Deleted text
+          del: ({ ...props }) => <del className="line-through" {...props} />,
+        }}
+      >
+        {markdown}
+      </ReactMarkdown>
+    </article>
   );
 };
 

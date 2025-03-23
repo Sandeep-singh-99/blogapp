@@ -62,19 +62,8 @@ export default function BlogHome() {
     );
   }
 
-  
-  if (!data) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="flex flex-col items-center space-y-2">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading blogs...</p>
-        </div>
-      </div>
-    );
-  }
 
-  const blogData: Blog[] = data.allBlogs || [];
+  const blogData: Blog[] = data?.allBlogs || [];
   const totalPages = Math.ceil(blogData.length / rowsPerPage);
 
   const currentData = blogData.slice(

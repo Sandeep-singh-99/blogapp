@@ -125,8 +125,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             />
           ),
           img: ({ src, alt, width, height, ...props }: ImageProps) => {
-            const imageWidth = Number(width) || 800;
-            const imageHeight = Number(height) || "auto";
+            const imageWidth = width ? Number(width) : 800;
+            const imageHeight = height ? Number(height) : 800;
 
             return (
               <figure className="my-6">
@@ -135,7 +135,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                   src={src || ""}
                   alt={alt || "Image from markdown content"}
                   width={imageWidth}
-                  height={imageHeight === "auto" ? undefined : imageHeight}
+                  height={imageHeight}
                   className="rounded-lg max-w-full h-auto"
                   loading="lazy"
                   {...props}

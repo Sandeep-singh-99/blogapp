@@ -116,7 +116,7 @@ export default async function BlogView({ params }: BlogViewProps) {
         )}
 
         {/* Blog Content */}
-        <section className="dark:bg-gray-950 p-6 md:p-8 rounded-xl shadow-md prose prose-lg dark:prose-invert max-w-none">
+        <section className="dark:bg-gray-900 p-6 md:p-8 rounded-xl shadow-md prose prose-lg dark:prose-invert max-w-none">
           <MarkdownRenderer markdown={blogData.markdown} />
         </section>
 

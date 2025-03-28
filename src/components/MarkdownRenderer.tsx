@@ -1,218 +1,205 @@
-"use client";
 
-import { showSuccess } from "@/utils/toast";
-import Image from "next/image";
-import React, { useCallback } from "react";
-import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import remarkGfm from "remark-gfm"; 
-import remarkBreaks from "remark-breaks"; 
-
-
-interface CodeBlockProps {
-  inline?: boolean;
-  className?: string;
-  children?: React.ReactNode;
-}
-
-interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  src?: string;
-  alt?: string;
-}
+'use client'
+import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface MarkdownRendererProps {
   markdown: string;
-  className?: string;
 }
 
 
-const CodeBlock: React.FC<CodeBlockProps> = ({
-  inline,
-  className,
-  children,
-}) => {
-  const match = /language-(\w+)/.exec(className || "");
-  const code = String(children ?? "").trim();
-
-  const copyToClipboard = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      showSuccess({ message: "Copied to clipboard!" });
-    } catch (err) {
-      console.error("Failed to copy code to clipboard:", err);
-    }
-  }, [code]);
-
-  if (inline) {
-    return (
-      <code
-        className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm text-gray-800 dark:text-gray-200 font-mono"
-        aria-label="Inline code"
-      >
-        {children ?? ""}
-      </code>
-    );
-  }
-
-  if (!match) {
-    return <code className={className}>{children ?? ""}</code>;
-  }
-
+export default function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
   return (
-    <div className="relative my-4 group">
-      <button
-        onClick={copyToClipboard}
-        className="absolute top-2 right-2 bg-gray-700 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label="Copy code to clipboard"
-      >
-        Copy
-      </button>
-      <SyntaxHighlighter
-        style={dracula}
-        language={match[1]}
-        PreTag="pre"
-        className="rounded-lg !mt-0 !mb-0 !p-4"
-        customStyle={{ margin: 0 }}
-        aria-label={`Code block in ${match[1]} language`}
-      >
-        {code}
-      </SyntaxHighlighter>
-    </div>
-  );
-};
-
-
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
-  markdown,
-  className,
-}) => {
-  return (
-    <article
-      className={`prose dark:prose-invert max-w-none ${className || ""}`}
-    >
+    <div className="max-w-full p-6 bg-white dark:bg-gray-900 rounded-lg shadow-sm font-sans text-gray-900 dark:text-gray-100">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkBreaks]} 
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         components={{
-          h1: ({ ...props }) => (
+          // Headings (h1-h6)
+          h1: ({ node, ...props }) => (
             <h1
-              className="text-3xl font-bold text-gray-900 dark:text-white mt-6 mb-4 pt-4 border-b border-gray-200 dark:border-gray-700 pb-2"
+              className="text-4xl font-bold mt-6 mb-4 border-b-2 pb-2 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
               {...props}
             />
           ),
-          h2: ({ ...props }) => (
+          h2: ({ node, ...props }) => (
             <h2
-              className="text-2xl font-bold text-gray-900 dark:text-white mt-6 mb-3 pt-4 border-b border-gray-200 dark:border-gray-700 pb-1"
+              className="text-3xl font-semibold mt-5 mb-3 border-b-1 pb-1 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700"
               {...props}
             />
           ),
-          h3: ({ ...props }) => (
+          h3: ({ node, ...props }) => (
             <h3
-              className="text-xl font-bold text-gray-900 dark:text-white mt-5 mb-2 pt-3"
+              className="text-2xl font-medium mt-4 mb-2 text-gray-800 dark:text-gray-200"
               {...props}
             />
           ),
-          h4: ({ ...props }) => (
+          h4: ({ node, ...props }) => (
             <h4
-              className="text-lg font-bold text-gray-900 dark:text-white mt-4 mb-2 pt-2"
+              className="text-xl font-medium mt-3 mb-2 text-gray-800 dark:text-gray-200"
               {...props}
             />
           ),
-          p: ({ ...props }) => (
-            <p
-              className="text-gray-700 dark:text-gray-300 leading-7 my-4"
+          h5: ({ node, ...props }) => (
+            <h5
+              className="text-lg font-medium mt-2 mb-1 text-gray-700 dark:text-gray-300"
               {...props}
             />
           ),
-          img: ({ src, alt, width, height, ...props }: ImageProps) => {
-            const imageWidth = width ? Number(width) : 800;
-            const imageHeight = height ? Number(height) : 800;
+          h6: ({ node, ...props }) => (
+            <h6
+              className="text-base font-medium mt-2 mb-1 text-gray-700 dark:text-gray-300"
+              {...props}
+            />
+          ),
 
-            return (
-              <figure className="my-6">
-                <Image
-                  loader={({ src }) => src}
-                  src={src || ""}
-                  alt={alt || "Image from markdown content"}
-                  width={imageWidth}
-                  height={imageHeight}
-                  className="rounded-lg max-w-full h-auto"
-                  loading="lazy"
-                  {...props}
-                />
-                {alt && (
-                  <figcaption className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">
-                    {alt}
-                  </figcaption>
-                )}
-              </figure>
-            );
-          },
-          a: ({ ...props }) => (
+          // Paragraphs
+          p: ({ node, ...props }) => (
+            <p
+              className="text-base my-4 leading-relaxed text-gray-800 dark:text-gray-200"
+              {...props}
+            />
+          ),
+
+          // Links
+          a: ({ node, ...props }) => (
             <a
-              className="text-blue-600 dark:text-blue-400 hover:underline visited:text-purple-600 dark:visited:text-purple-400"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline transition-colors duration-200"
               target="_blank"
               rel="noopener noreferrer"
               {...props}
             />
           ),
-          ul: ({ ...props }) => (
+
+          // Unordered Lists
+          ul: ({ node, ...props }) => (
             <ul
-              className="list-disc list-outside pl-6 my-4 text-gray-700 dark:text-gray-300 space-y-2"
+              className="my-4 pl-6 list-disc text-gray-800 dark:text-gray-200"
               {...props}
             />
           ),
-          ol: ({ ...props }) => (
+          li: ({ node, ...props }) => (
+            <li className="my-1 text-gray-800 dark:text-gray-200" {...props} />
+          ),
+
+          // Ordered Lists
+          ol: ({ node, ...props }) => (
             <ol
-              className="list-decimal list-outside pl-6 my-4 text-gray-700 dark:text-gray-300 space-y-2"
+              className="my-4 pl-6 list-decimal text-gray-800 dark:text-gray-200"
               {...props}
             />
           ),
-          li: ({ ...props }) => <li className="my-1 pl-1" {...props} />,
-          code: CodeBlock,
-          blockquote: ({ ...props }) => (
+
+          // Blockquotes
+          blockquote: ({ node, ...props }) => (
             <blockquote
-              className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50"
+              className="border-l-4 pl-4 my-4 italic text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-700"
               {...props}
             />
           ),
-          em: ({ ...props }) => <em className="italic" {...props} />,
-          strong: ({ ...props }) => <strong className="font-bold" {...props} />,
-          hr: ({ ...props }) => (
-            <hr
-              className="my-8 border-t border-gray-300 dark:border-gray-600"
-              {...props}
-            />
+
+          // Code blocks with copy button
+          code({ node, inline, className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className || '');
+            const codeText = String(children).replace(/\n$/, '');
+
+            if (!inline && match) {
+              const [copied, setCopied] = useState(false);
+
+              const handleCopy = () => {
+                navigator.clipboard.writeText(codeText).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+                });
+              };
+
+              return (
+                <div className="relative my-4">
+                  <SyntaxHighlighter
+                    style={oneDark}
+                    language={match[1]}
+                    PreTag="div"
+                    customStyle={{
+                      borderRadius: '0.375rem',
+                      padding: '1rem',
+                      margin: 0,
+                      fontSize: '0.9rem',
+                    }}
+                    {...props}
+                  >
+                    {codeText}
+                  </SyntaxHighlighter>
+                  <button
+                    onClick={handleCopy}
+                    className="absolute top-2 right-2 px-2 py-1 text-sm font-medium text-gray-100 bg-gray-700 dark:bg-gray-600 rounded hover:bg-gray-600 dark:hover:bg-gray-500 transition-colors duration-200"
+                  >
+                    {copied ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              );
+            }
+
+            return (
+              <code
+                className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-1 py-0.5 rounded font-mono text-sm"
+                {...props}
+              >
+                {children}
+              </code>
+            );
+          },
+
+          // Horizontal Rule
+          hr: ({ node, ...props }) => (
+            <hr className="my-6 border-t border-gray-300 dark:border-gray-700" {...props} />
           ),
-          table: ({ ...props }) => (
+
+          // Emphasis (italic)
+          em: ({ node, ...props }) => (
+            <em className="italic text-gray-800 dark:text-gray-200" {...props} />
+          ),
+
+          // Strong (bold)
+          strong: ({ node, ...props }) => (
+            <strong className="font-bold text-gray-900 dark:text-gray-100" {...props} />
+          ),
+
+          // Deleted text (strikethrough)
+          del: ({ node, ...props }) => (
+            <del className="line-through text-gray-500 dark:text-gray-400" {...props} />
+          ),
+
+          // Images
+          img: ({ node, ...props }) => (
+            <img className="max-w-full h-auto my-4 rounded" {...props} />
+          ),
+
+          // Tables
+          table: ({ node, ...props }) => (
             <table
-              className="my-4 w-full border-collapse border border-gray-300 dark:border-gray-600"
+              className="w-full my-4 border-collapse border border-gray-300 dark:border-gray-700"
               {...props}
             />
           ),
-          thead: ({ ...props }) => (
-            <thead className="bg-gray-100 dark:bg-gray-800" {...props} />
-          ),
-          th: ({ ...props }) => (
+          th: ({ node, ...props }) => (
             <th
-              className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold"
+              className="border border-gray-300 dark:border-gray-700 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold"
               {...props}
             />
           ),
-          td: ({ ...props }) => (
+          td: ({ node, ...props }) => (
             <td
-              className="border border-gray-300 dark:border-gray-600 px-4 py-2"
+              className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-200"
               {...props}
             />
           ),
-          // Deleted text
-          del: ({ ...props }) => <del className="line-through" {...props} />,
         }}
       >
         {markdown}
       </ReactMarkdown>
-    </article>
+    </div>
   );
-};
-
-export default MarkdownRenderer;
+}

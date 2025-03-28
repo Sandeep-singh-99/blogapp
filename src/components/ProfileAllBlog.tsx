@@ -18,7 +18,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { showError, showSuccess } from "@/utils/toast";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 interface Blog {
@@ -38,7 +37,6 @@ const fetcher = async (url: string) => {
 
 export default function ProfileAllBlog() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: session } = useSession();
 
   const { data, error } = useSWR("/api/blogs", fetcher, {
     dedupingInterval: 60000,

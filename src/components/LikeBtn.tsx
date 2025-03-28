@@ -39,7 +39,7 @@ export default function LikeBtn({ id }: LikeBtnProps) {
       }
 
       
-      mutate(`/api/likes/total-likes/${id}`, (prev: any) => ({
+      mutate(`/api/likes/total-likes/${id}`, () => ({
         totalLikes: result.error ? totalLikes - 1 : totalLikes + 1,
       }), false);
 

@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default function NavBar() {
-  const { theme, setTheme } = useTheme();
+  const {  setTheme } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { data: session } = useSession();
 

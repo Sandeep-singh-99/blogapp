@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
 
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const client = await getMongoClient();
     const db = client.db();

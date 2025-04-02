@@ -36,11 +36,11 @@ export default function Write() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);
-    formData.append("upload_preset", "j6l66rqt");
+    formData.append("upload_preset", "qjumeyyg");
 
     try {
       const response = await fetch(
-        "https://api.cloudinary.com/v1_1/djlnhwj6u/image/upload",
+        "https://api.cloudinary.com/v1_1/dclpb8mva/image/upload",
         {
           method: "POST",
           body: formData,

@@ -9,7 +9,7 @@ import { Share } from "lucide-react";
 import LikeBtn from "@/components/LikeBtn";
 
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const baseUrl =  "http://localhost:3000";
 
 async function getBlogData(id: string) {
   try {

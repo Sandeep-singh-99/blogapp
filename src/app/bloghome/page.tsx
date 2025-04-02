@@ -14,7 +14,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const baseUrl =  "http://localhost:3000";
 
 const fetcher = async (url: string) => {
   const response = await fetch(url);

@@ -97,8 +97,9 @@ export default function BlogHome() {
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              href="#"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={(e) =>{
+                e.preventDefault();
+               setCurrentPage((prev) => Math.max(prev - 1, 1)) }}
               className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
@@ -106,9 +107,10 @@ export default function BlogHome() {
           {[...Array(totalPages)].map((_, index) => (
             <PaginationItem key={index}>
               <PaginationLink
-                href="#"
                 isActive={currentPage === index + 1}
-                onClick={() => setCurrentPage(index + 1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                   setCurrentPage(index + 1) }}
               >
                 {index + 1}
               </PaginationLink>
@@ -117,10 +119,10 @@ export default function BlogHome() {
 
           <PaginationItem>
             <PaginationNext
-              href="#"
-              onClick={() =>
+              onClick={(e) => {
+                e.preventDefault();
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
+              }}
               className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
